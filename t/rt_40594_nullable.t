@@ -16,7 +16,7 @@ BEGIN {
 	}
 }
 
-plan tests => 7;
+plan tests => 6;
 
 my $dbh = connect_ok();
 
@@ -27,7 +27,6 @@ ok $sth->execute;
 my $expected = {
     NUM_OF_FIELDS => 4,
     NAME_lc => [qw/id col1 col2 col3/],
-    TYPE => [qw/INTEGER varchar(2) varchar(2) char(2)/],
     NULLABLE => [qw/0 0 1 0/],
 };
 
