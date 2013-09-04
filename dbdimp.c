@@ -297,6 +297,7 @@ sqlite_db_login6(SV *dbh, imp_dbh_t *imp_dbh, char *dbname, char *user, char *pa
     imp_dbh->allow_multiple_statements = FALSE;
     imp_dbh->use_immediate_transaction = TRUE;
     imp_dbh->see_if_its_a_number       = FALSE;
+    imp_dbh->prefer_numeric_type       = FALSE;
 
     sqlite3_busy_timeout(imp_dbh->db, SQL_TIMEOUT);
 
@@ -505,6 +506,10 @@ sqlite_db_STORE_attrib(SV *dbh, imp_dbh_t *imp_dbh, SV *keysv, SV *valuesv)
         imp_dbh->see_if_its_a_number = !(! SvTRUE(valuesv));
         return TRUE;
     }
+    if (strEQ(key, "sqlite_prefer_numeric_type")) {
+        imp_dbh->prefer_numeric_type = !(! SvTRUE(valuesv));
+        return TRUE;
+    }
     if (strEQ(key, "sqlite_unicode")) {
 #if PERL_UNICODE_DOES_NOT_WORK_WELL
         sqlite_trace(dbh, imp_dbh, 3, form("Unicode support is disabled for this version of perl."));
@@ -545,6 +550,9 @@ sqlite_db_FETCH_attrib(SV *dbh, imp_dbh_t *imp_dbh, SV *keysv)
    }
    if (strEQ(key, "sqlite_see_if_its_a_number")) {
        return sv_2mortal(newSViv(imp_dbh->see_if_its_a_number ? 1 : 0));
+   }
+   if (strEQ(key, "sqlite_prefer_numeric_type")) {
+       return sv_2mortal(newSViv(imp_dbh->prefer_numeric_type ? 1 : 0));
    }
    if (strEQ(key, "sqlite_unicode")) {
 #if PERL_UNICODE_DOES_NOT_WORK_WELL
@@ -1151,10 +1159,18 @@ sqlite_st_FETCH_attrib(SV *sth, imp_sth_t *imp_sth, SV *keysv)
         av_extend(av, i);
         retsv = sv_2mortal(newRV_noinc((SV*)av));
         for (n = 0; n < i; n++) {
-            int type = sqlite3_column_type(imp_sth->stmt, n);
-            /* warn("got type: %d = %s\n", type, fieldtype); */
-            type = sqlite_type_to_odbc_type(type);
-            av_store(av, n, newSViv(type));
+            if (imp_dbh->prefer_numeric_type) {
+                int type = sqlite3_column_type(imp_sth->stmt, n);
+                /* warn("got type: %d = %s\n", type, fieldtype); */
+                type = sqlite_type_to_odbc_type(type);
+                av_store(av, n, newSViv(type));
+            } else {
+                const char *fieldtype = sqlite3_column_decltype(imp_sth->stmt, n);
+                if (fieldtype)
+                    av_store(av, n, newSVpv(fieldtype, 0));
+                else
+                    av_store(av, n, newSVpv("VARCHAR", 0));
+            }
         }
     }
     else if (strEQ(key, "NULLABLE")) {

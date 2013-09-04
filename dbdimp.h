@@ -36,6 +36,7 @@ struct imp_dbh_st {
     bool allow_multiple_statements;
     bool use_immediate_transaction;
     bool see_if_its_a_number;
+    bool prefer_numeric_type;
 };
 
 /* Statement Handle */
