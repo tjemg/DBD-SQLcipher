@@ -220,6 +220,7 @@ if ( $sqlite_inc ) {
 }
 
 my @CC_DEFINE = (
+	'-DSQLITE_HAS_CODEC',               # for sqlitecipher
 	'-DSQLITE_ENABLE_FTS4',             # for sqlite >= 3.7.4
 	'-DSQLITE_ENABLE_FTS3_PARENTHESIS', # for sqlite >= 3.6.10
 	'-DSQLITE_ENABLE_RTREE',            # for sqlite >= 3.6.10
