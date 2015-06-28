@@ -1,5 +1,9 @@
 Changes for Perl extension DBD-SQLite
 
+0.01 2015-06-28
+  - Forked DBD::SQLite to DBD::SQLcipher (TGASIBA)
+  - Initial release based on DBD::SQLite v1.48
+
 1.48 2015-06-12
   - Switched to a production version. (ISHIGAKI)
 
