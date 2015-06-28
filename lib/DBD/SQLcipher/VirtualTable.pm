@@ -1,5 +1,5 @@
 #======================================================================
-package DBD::SQLite::VirtualTable;
+package DBD::SQLcipher::VirtualTable;
 #======================================================================
 use strict;
 use warnings;
@@ -180,7 +180,7 @@ sub sqlite_table_info {
 }
 
 #======================================================================
-package DBD::SQLite::VirtualTable::Cursor;
+package DBD::SQLcipher::VirtualTable::Cursor;
 #======================================================================
 use strict;
 use warnings;
@@ -225,12 +225,12 @@ __END__
 
 =head1 NAME
 
-DBD::SQLite::VirtualTable -- SQLite virtual tables implemented in Perl
+DBD::SQLcipher::VirtualTable -- SQLcipher virtual tables implemented in Perl
 
 =head1 SYNOPSIS
 
   # register the virtual table module within sqlite
-  $dbh->sqlite_create_module(mod_name => "DBD::SQLite::VirtualTable::Subclass");
+  $dbh->sqlite_create_module(mod_name => "DBD::SQLcipher::VirtualTable::Subclass");
 
   # create a virtual table
   $dbh->do("CREATE VIRTUAL TABLE vtbl USING mod_name(arg1, arg2, ...)")
@@ -240,17 +240,17 @@ DBD::SQLite::VirtualTable -- SQLite virtual tables implemented in Perl
 
 B<Note> : VirtualTable subclasses or instances are not called
 directly from Perl code; everything happens indirectly through SQL
-statements within SQLite.
+statements within SQLcipher.
 
 
 =head1 DESCRIPTION
 
-This module is an abstract class for implementing SQLite virtual tables,
+This module is an abstract class for implementing SQLcipher virtual tables,
 written in Perl. Such tables look like regular tables, and are accessed
 through regular SQL instructions and regular L<DBI> API; but the implementation
 is done through hidden calls to a Perl class. 
 This is the same idea as Perl's L<tied variables|perltie>, but
-at the SQLite level.
+at the SQLcipher level.
 
 The current abstract class cannot be used directly, so the
 synopsis above is just to give a general idea. Concrete, usable
@@ -260,13 +260,13 @@ classes bundled with the present distribution are :
 
 =item *
 
-L<DBD::SQLite::VirtualTable::FileContent> : implements a virtual
+L<DBD::SQLcipher::VirtualTable::FileContent> : implements a virtual
 column that exposes file contents. This is especially useful
-in conjunction with a fulltext index; see L<DBD::SQLite::Fulltext_search>.
+in conjunction with a fulltext index; see L<DBD::SQLcipher::Fulltext_search>.
 
 =item *
 
-L<DBD::SQLite::VirtualTable::PerlData> : binds to a Perl array
+L<DBD::SQLcipher::VirtualTable::PerlData> : binds to a Perl array
 within the Perl program. This can be used for simple import/export
 operations, for debugging purposes, for joining data from different
 sources, etc.
@@ -285,7 +285,7 @@ virtual table module, refer to that module's documentation.
 
 =head2 Classes
 
-A virtual table module for SQLite is implemented through a pair
+A virtual table module for SQLcipher is implemented through a pair
 of classes :
 
 =over
@@ -430,7 +430,7 @@ call the C<DESTROY()> method if such a method is present).
 The default implementation for DROP is empty.
 
 B<Note> : this corresponds to the C<xDestroy> method
-in the SQLite documentation; here it was not named
+in the SQLcipher documentation; here it was not named
 C<DESTROY>, to avoid any confusion with the standard
 Perl method C<DESTROY> for object destruction.
 
@@ -483,10 +483,10 @@ of rows from the virtual table.
 
 =back
 
-By calling this method, the SQLite core is saying to the virtual table
+By calling this method, the SQLcipher core is saying to the virtual table
 that it needs to access some subset of the rows in the virtual table
 and it wants to know the most efficient way to do that access. The
-C<BEST_INDEX> method replies with information that the SQLite core can
+C<BEST_INDEX> method replies with information that the SQLcipher core can
 then use to conduct an efficient search of the virtual table.
 
 The method takes as input a list of C<$constraints> and a list
@@ -598,7 +598,7 @@ has been taken into account or not.
 
 A float that should be set to the estimated number of disk access
 operations required to execute this query against the virtual
-table. The SQLite core will often call BEST_INDEX multiple times with
+table. The SQLcipher core will often call BEST_INDEX multiple times with
 different constraints, obtain multiple cost estimates, then choose the
 query plan that gives the lowest estimate.
 
@@ -750,7 +750,7 @@ This method begins a search of a virtual table.
 
 The C<$idxNum> and C<$idxStr> arguments correspond to values returned
 by L</BEST_INDEX> for the chosen index. The specific meanings of
-those values are unimportant to SQLite, as long as C<BEST_INDEX> and
+those values are unimportant to SQLcipher, as long as C<BEST_INDEX> and
 C<FILTER> agree on what that meaning is.
 
 The C<BEST_INDEX> method may have requested the values of certain
@@ -762,7 +762,7 @@ If the virtual table contains one or more rows that match the search
 criteria, then the cursor must be left point at the first
 row. Subsequent calls to L</EOF> must return false. If there are
 no rows match, then the cursor must be left in a state that will cause
-L</EOF> to return true. The SQLite engine will use the
+L</EOF> to return true. The SQLcipher engine will use the
 L</COLUMN> and L</ROWID> methods to access that row content. The L</NEXT>
 method will be used to advance to the next row.
 
@@ -787,7 +787,7 @@ false.
 
   my $value = $cursor->COLUMN($idxCol);
 
-The SQLite core invokes this method in order to find the value for the
+The SQLcipher core invokes this method in order to find the value for the
 N-th column of the current row. N is zero-based so the first column is
 numbered 0.
 
@@ -800,9 +800,9 @@ Returns the I<rowid> of row that the cursor is currently pointing at.
 
 =head1 SEE ALSO
 
-L<SQLite::VirtualTable> is another module for virtual tables written
+L<SQLcipher::VirtualTable> is another module for virtual tables written
 in Perl, but designed for the reverse use case : instead of starting a
-Perl program, and embedding the SQLite library into it, the intended
+Perl program, and embedding the SQLcipher library into it, the intended
 use is to start an sqlite program, and embed the Perl interpreter
 into it.
 
@@ -815,7 +815,7 @@ Laurent Dami E<lt>dami@cpan.orgE<gt>
 
 Copyright Laurent Dami, 2014.
 
-Parts of the code are borrowed from L<SQLite::VirtualTable>,
+Parts of the code are borrowed from L<SQLcipher::VirtualTable>,
 copyright (C) 2006, 2009 by Qindel Formacion y Servicios, S. L.
 
 This library is free software; you can redistribute it and/or modify

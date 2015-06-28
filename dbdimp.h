@@ -2,10 +2,10 @@
 #ifndef _DBDIMP_H
 #define _DBDIMP_H   1
 
-#include "SQLiteXS.h"
+#include "SQLcipherXS.h"
 #include "sqlite3.h"
 
-#define MY_CXT_KEY "DBD::SQLite::_guts" XS_VERSION
+#define MY_CXT_KEY "DBD::SQLcipher::_guts" XS_VERSION
 
 typedef struct {
     int last_dbh_is_unicode;

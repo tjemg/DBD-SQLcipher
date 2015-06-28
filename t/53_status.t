@@ -24,7 +24,7 @@ my $dbh = connect_ok();
 }
 
 {
-	my $status = DBD::SQLite::sqlite_status();
+	my $status = DBD::SQLcipher::sqlite_status();
 	ok $status && ref $status eq ref {}, "status is a hashref";
 	my $num_of_keys = scalar keys %$status;
 	ok $num_of_keys, "status: $num_of_keys indicators";

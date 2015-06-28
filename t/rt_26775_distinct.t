@@ -9,12 +9,12 @@ BEGIN { requires_sqlite('3.6.3') }
 
 plan tests => 22;
 
-use_ok('DBD::SQLite');
+use_ok('DBD::SQLcipher');
 
 my $noprintquerymsg = '(Set ENV{PRINT_QUERY} to true value to see query)';
 my $tinfo;
 
-my $dbh = DBI->connect('DBI:SQLite::memory:');
+my $dbh = DBI->connect('DBI:SQLcipher::memory:');
 ok( ref $dbh, "create new db" );
 
 # ###### 

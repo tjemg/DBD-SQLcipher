@@ -37,7 +37,7 @@ foreach my $subdir ( 'longascii', 'adatbázis', 'name with spaces', '¿¿¿ ¿¿¿¿¿¿')
 	# Open the database
 	my $dbfile = catfile($dir, $subdir, 'db.db');
 	eval {
-		my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef, {
+		my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile", undef, undef, {
 			RaiseError => 1,
 			PrintError => 0,
 		} );
@@ -48,7 +48,7 @@ foreach my $subdir ( 'longascii', 'adatbázis', 'name with spaces', '¿¿¿ ¿¿¿¿¿¿')
 
 	# Reopen the database
 	eval {
-		my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef, {
+		my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile", undef, undef, {
 			RaiseError => 1,
 			PrintError => 0,
 		} );
@@ -62,7 +62,7 @@ foreach my $subdir ( 'longascii', 'adatbázis', 'name with spaces', '¿¿¿ ¿¿¿¿¿¿')
 	# Repeat with the unicode flag on
 	my $ufile = $dbfile;
 	eval {
-		my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef, {
+		my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile", undef, undef, {
 			RaiseError => 1,
 			PrintError => 0,
 			sqlite_unicode    => 1,
@@ -74,7 +74,7 @@ foreach my $subdir ( 'longascii', 'adatbázis', 'name with spaces', '¿¿¿ ¿¿¿¿¿¿')
 
 	# Reopen the database
 	eval {
-		my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", undef, undef, {
+		my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile", undef, undef, {
 			RaiseError => 1,
 			PrintError => 0,
 			sqlite_unicode    => 1,
@@ -89,14 +89,14 @@ foreach my $subdir ( 'longascii', 'adatbázis', 'name with spaces', '¿¿¿ ¿¿¿¿¿¿')
 	# when the name of the database file has non-latin characters
 	my $dbfilex = catfile($dir, "$subdir.db");
 	eval {
-		DBI->connect("dbi:SQLite:dbname=$dbfilex", "", "", {RaiseError => 1, PrintError => 0});
+		DBI->connect("dbi:SQLcipher:dbname=$dbfilex", "", "", {RaiseError => 1, PrintError => 0});
 	};
 	ok(!$@, "Could connect to database in $dbfilex") or diag $@;
 	ok -f _path($dbfilex), "file exists: "._path($dbfilex)." ($dbfilex)";
 
 	# Reopen the database
 	eval {
-		DBI->connect("dbi:SQLite:dbname=$dbfilex", "", "", {RaiseError => 1, PrintError => 0});
+		DBI->connect("dbi:SQLcipher:dbname=$dbfilex", "", "", {RaiseError => 1, PrintError => 0});
 	};
 	ok(!$@, "Could connect to database in $dbfilex") or diag $@;
 
@@ -106,7 +106,7 @@ foreach my $subdir ( 'longascii', 'adatbázis', 'name with spaces', '¿¿¿ ¿¿¿¿¿¿')
 
 # connect to an empty filename - sqlite will create a tempfile
 eval {
-	my $dbh = DBI->connect("dbi:SQLite:dbname=", undef, undef, {
+	my $dbh = DBI->connect("dbi:SQLcipher:dbname=", undef, undef, {
 		RaiseError => 1,
 		PrintError => 0,
 	} );
@@ -118,7 +118,7 @@ diag( $@ ) if $@;
 
 
 
-sub _path {  # copied from DBD::SQLite::connect
+sub _path {  # copied from DBD::SQLcipher::connect
 	my $path = shift;
 
 	if ($^O =~ /MSWin32/) {

@@ -13,7 +13,7 @@ BEGIN { requires_sqlite('3.7.7') }
 
 plan tests => 17;
 use DBI;
-use DBD::SQLite;
+use DBD::SQLcipher;
 
 my $dbfile = dbfile('foo');
 my %uri = (
@@ -35,7 +35,7 @@ cleanup();
 
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:$uri{base}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$uri{base}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -48,7 +48,7 @@ cleanup();
 # uri=(uri)
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:uri=$uri{base}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:uri=$uri{base}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -60,7 +60,7 @@ cleanup();
 
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:uri=$uri{ro}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:uri=$uri{ro}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -71,7 +71,7 @@ cleanup();
 
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:uri=$uri{rw}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:uri=$uri{rw}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -82,7 +82,7 @@ cleanup();
 
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:uri=$uri{rwc}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:uri=$uri{rwc}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -94,7 +94,7 @@ cleanup();
 
 {
   eval {
-    DBI->connect("dbi:SQLite:$dbfile", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$dbfile", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -102,7 +102,7 @@ cleanup();
   ok !$@ && -f $dbfile, "created a dbfile";
 
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:uri=$uri{ro}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:uri=$uri{ro}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -114,7 +114,7 @@ cleanup();
 
 {
   eval {
-    DBI->connect("dbi:SQLite:$dbfile", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$dbfile", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -122,7 +122,7 @@ cleanup();
   ok !$@ && -f $dbfile, "created a dbfile";
 
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:uri=$uri{rw}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:uri=$uri{rw}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -135,10 +135,10 @@ cleanup();
 # OPEN_URI flag
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:$uri{base}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$uri{base}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
-      sqlite_open_flags => DBD::SQLite::OPEN_URI,
+      sqlite_open_flags => DBD::SQLcipher::OPEN_URI,
     });
   };
   ok !$@ && $dbh && -f $dbfile && !-f $uri{base}, "correct database is created for uri";
@@ -148,10 +148,10 @@ cleanup();
 
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:$uri{ro}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$uri{ro}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
-      sqlite_open_flags => DBD::SQLite::OPEN_URI,
+      sqlite_open_flags => DBD::SQLcipher::OPEN_URI,
     });
   };
   ok $@ && !$dbh && !-f $dbfile && !-f $uri{base} && !-f $uri{ro}, "failed to open a nonexistent readonly database for uri";
@@ -160,10 +160,10 @@ cleanup();
 
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:$uri{rw}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$uri{rw}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
-      sqlite_open_flags => DBD::SQLite::OPEN_URI,
+      sqlite_open_flags => DBD::SQLcipher::OPEN_URI,
     });
   };
   ok $@ && !$dbh && !-f $dbfile && !-f $uri{base} && !-f $uri{rw}, "failed to open a nonexistent readwrite database for uri";
@@ -172,10 +172,10 @@ cleanup();
 
 {
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:$uri{rwc}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$uri{rwc}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
-      sqlite_open_flags => DBD::SQLite::OPEN_URI,
+      sqlite_open_flags => DBD::SQLcipher::OPEN_URI,
     });
   };
   ok !$@ && $dbh && -f $dbfile && !-f $uri{base} && !-f $uri{rwc}, "correct database is created for uri";
@@ -185,7 +185,7 @@ cleanup();
 
 {
   eval {
-    DBI->connect("dbi:SQLite:$dbfile", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$dbfile", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -193,10 +193,10 @@ cleanup();
   ok !$@ && -f $dbfile, "created a dbfile";
 
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:$uri{ro}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$uri{ro}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
-      sqlite_open_flags => DBD::SQLite::OPEN_URI,
+      sqlite_open_flags => DBD::SQLcipher::OPEN_URI,
     });
   };
   ok !$@ && $dbh && -f $dbfile && !-f $uri{base} && !-f $uri{ro}, "opened a correct readonly database for uri";
@@ -206,7 +206,7 @@ cleanup();
 
 {
   eval {
-    DBI->connect("dbi:SQLite:$dbfile", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$dbfile", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
     });
@@ -214,10 +214,10 @@ cleanup();
   ok !$@ && -f $dbfile, "created a dbfile";
 
   my $dbh = eval {
-    DBI->connect("dbi:SQLite:$uri{rw}", undef, undef, {
+    DBI->connect("dbi:SQLcipher:$uri{rw}", undef, undef, {
       PrintError => 0,
       RaiseError => 1,
-      sqlite_open_flags => DBD::SQLite::OPEN_URI,
+      sqlite_open_flags => DBD::SQLcipher::OPEN_URI,
     });
   };
   ok !$@ && $dbh && -f $dbfile && !-f $uri{base} && !-f $uri{rw}, "opened a correct readwrite database for uri";

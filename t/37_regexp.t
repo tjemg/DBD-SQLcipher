@@ -38,7 +38,7 @@ BEGIN {
 }
 use locale;
 
-use DBD::SQLite;
+use DBD::SQLcipher;
 
 
 

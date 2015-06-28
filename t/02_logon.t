@@ -37,7 +37,7 @@ foreach my $call_func (@CALL_FUNCS) {
 			skip( 'Unicode is not supported before 5.8.5', 2 );
 		}
 		my $file = 'foo'.$$;
-		my $dbh = DBI->connect( "dbi:SQLite:dbname=$file;sqlite_unicode=1", '', '' );
+		my $dbh = DBI->connect( "dbi:SQLcipher:dbname=$file;sqlite_unicode=1", '', '' );
 		isa_ok( $dbh, 'DBI::db' );
 		is( $dbh->{sqlite_unicode}, 1, 'Unicode is on' );
 		$dbh->disconnect;
@@ -50,7 +50,7 @@ foreach my $call_func (@CALL_FUNCS) {
 			my $file = 'foo'.$$;
 			unlink $file if -f $file;
 			ok !-f $file, 'database file does not exist';
-			my $dbh = DBI->connect("dbi:SQLite:$key=$file");
+			my $dbh = DBI->connect("dbi:SQLcipher:$key=$file");
 			isa_ok( $dbh, 'DBI::db' );
 			ok -f $file, "database file (specified by $key=$file) now exists";
 			$dbh->disconnect;
@@ -60,7 +60,7 @@ foreach my $call_func (@CALL_FUNCS) {
 
 	# Connect to a memory database
 	SCOPE: {
-		my $dbh = DBI->connect( 'dbi:SQLite:dbname=:memory:', '', '' );
+		my $dbh = DBI->connect( 'dbi:SQLcipher:dbname=:memory:', '', '' );
 		isa_ok( $dbh, 'DBI::db' );	
 	}
 }

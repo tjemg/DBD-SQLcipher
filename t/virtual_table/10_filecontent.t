@@ -30,7 +30,7 @@ $dbh->do(<<"");
 
 # start tests
 
-ok $dbh->$sqlite_call(create_module => fs => "DBD::SQLite::VirtualTable::FileContent"),
+ok $dbh->$sqlite_call(create_module => fs => "DBD::SQLcipher::VirtualTable::FileContent"),
    "create_module";
 
 

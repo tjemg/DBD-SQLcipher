@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # In a contentless FTS table, the columns are hidden from the schema,
-# and therefore SQLite has no information to infer column types, so
+# and therefore SQLcipher has no information to infer column types, so
 # these are typed as SQLITE_NULL ... and this type conflicts with the
 # constraint on the 'docid' column. So we have to explicitly type that
 # column, using a CAST expression or a call to bind_param().

@@ -47,7 +47,7 @@ my $db_file = 'test.db';
 unlink($db_file);
 die "Could not delete $db_file - $!" if(-e $db_file);
 
-my $dbh = DBI->connect("dbi:SQLite:dbname=$db_file", undef, undef, {
+my $dbh = DBI->connect("dbi:SQLcipher:dbname=$db_file", undef, undef, {
 RaiseError => 1, AutoCommit => 1 });
 
 $dbh->do('CREATE TABLE t1 (id int)');

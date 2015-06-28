@@ -7,7 +7,7 @@ BEGIN {
 
 use t::lib::Test     qw/connect_ok has_sqlite/;
 use Test::More;
-use DBD::SQLite;
+use DBD::SQLcipher;
 
 my @texts = ("il était une bergère",
              "qui gardait ses moutons",
@@ -30,8 +30,8 @@ BEGIN {
 	if ($] < 5.008005) {
 		plan skip_all => 'Unicode is not supported before 5.8.5';
 	}
-	if (!grep /ENABLE_FTS3/, DBD::SQLite::compile_options()) {
-		plan skip_all => 'FTS3 is disabled for this DBD::SQLite';
+	if (!grep /ENABLE_FTS3/, DBD::SQLcipher::compile_options()) {
+		plan skip_all => 'FTS3 is disabled for this DBD::SQLcipher';
 	}
 }
 use Test::NoWarnings;
@@ -72,7 +72,7 @@ sub locale_tokenizer { # see also: Search::Tokenizer
 
 
 
-use DBD::SQLite;
+use DBD::SQLcipher;
 
 
 
@@ -100,10 +100,10 @@ for my $use_unicode (0, 1) {
 
     # queries
   SKIP: {
-      skip "These tests require SQLite compiled with "
+      skip "These tests require SQLcipher compiled with "
          . "ENABLE_FTS3_PARENTHESIS option", scalar @tests
-        unless DBD::SQLite->can('compile_options') &&
-        grep /ENABLE_FTS3_PARENTHESIS/, DBD::SQLite::compile_options();
+        unless DBD::SQLcipher->can('compile_options') &&
+        grep /ENABLE_FTS3_PARENTHESIS/, DBD::SQLcipher::compile_options();
       my $sql = "SELECT docid FROM try_$fts WHERE content MATCH ?";
       for my $t (@tests) {
         my ($query, @expected) = @$t;

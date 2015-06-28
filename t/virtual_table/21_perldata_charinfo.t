@@ -6,7 +6,7 @@ BEGIN {
 }
 
 # test the example described in 
-# L<DBD::SQLite::VirtualTable::PerlData/"Hashref example : unicode characters">
+# L<DBD::SQLcipher::VirtualTable::PerlData/"Hashref example : unicode characters">
 
 use t::lib::Test qw/connect_ok $sqlite_call/;
 use Test::More;
@@ -30,7 +30,7 @@ my $sigma_block = charinfo(0x3A3)->{block};
 my $dbh = connect_ok( RaiseError => 1, AutoCommit => 1 );
 
 ok $dbh->$sqlite_call(create_module =>
-                        perl => "DBD::SQLite::VirtualTable::PerlData"),
+                        perl => "DBD::SQLcipher::VirtualTable::PerlData"),
    "create_module";
 
 ok $dbh->do(<<""), "create table";
@@ -43,7 +43,7 @@ my $res = $dbh->selectall_arrayref($sql, {Slice => {}});
 ok scalar(@$res),                        "found sigma letters";
 is $res->[0]{block}, $sigma_block, "letter in proper block";
 
-# The former example used SQLite's LIKE operator; now do the same with MATCH
+# The former example used SQLcipher's LIKE operator; now do the same with MATCH
 # which gets translated to a Perl regex
 $sql = "SELECT * FROM charinfo WHERE script='Greek' AND name MATCH 'SIGMA'";
 $res = $dbh->selectall_arrayref($sql, {Slice => {}});

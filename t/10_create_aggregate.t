@@ -9,12 +9,12 @@ BEGIN {
 use t::lib::Test qw/connect_ok @CALL_FUNCS/;
 use Test::More;
 use Test::NoWarnings;
-use DBD::SQLite;
-use DBD::SQLite::Constants;
+use DBD::SQLcipher;
+use DBD::SQLcipher::Constants;
 
 my @function_flags = (undef, 0);
-if ($DBD::SQLite::sqlite_version_number >= 3008003) {
-  push @function_flags, DBD::SQLite::Constants::SQLITE_DETERMINISTIC;
+if ($DBD::SQLcipher::sqlite_version_number >= 3008003) {
+  push @function_flags, DBD::SQLcipher::Constants::SQLITE_DETERMINISTIC;
 }
 
 plan tests => 21 * @CALL_FUNCS * @function_flags + 1;

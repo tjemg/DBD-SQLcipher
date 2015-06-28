@@ -8,11 +8,11 @@ BEGIN {
 
 use Test::More;
 use t::lib::Test;
-use DBD::SQLite;
+use DBD::SQLcipher;
 
 BEGIN {
-	if (!grep /^ENABLE_COLUMN_METADATA/, DBD::SQLite::compile_options()) {
-		plan skip_all => "Column metadata is disabled for this DBD::SQLite";
+	if (!grep /^ENABLE_COLUMN_METADATA/, DBD::SQLcipher::compile_options()) {
+		plan skip_all => "Column metadata is disabled for this DBD::SQLcipher";
 	}
 }
 

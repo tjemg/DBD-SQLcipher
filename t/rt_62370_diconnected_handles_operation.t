@@ -8,14 +8,14 @@ BEGIN {
 
 use t::lib::Test qw/connect_ok @CALL_FUNCS/;
 use Test::More;
-use DBD::SQLite;
+use DBD::SQLcipher;
 #use Test::NoWarnings;
 
 my @methods = qw(
 	commit rollback
 );
 
-plan tests => 2 * (6 + @methods) + 2 * @CALL_FUNCS * (14 + ($DBD::SQLite::sqlite_version_number >= 3006011) * 2);
+plan tests => 2 * (6 + @methods) + 2 * @CALL_FUNCS * (14 + ($DBD::SQLcipher::sqlite_version_number >= 3006011) * 2);
 
 local $SIG{__WARN__} = sub {};  # to hide warnings/error messages
 
@@ -62,7 +62,7 @@ for my $autocommit (0, 1) {
 	}
 }
 
-# SQLite private methods
+# SQLcipher private methods
 
 for my $call_func (@CALL_FUNCS) {
 	for my $autocommit (0, 1) {
@@ -167,13 +167,13 @@ for my $call_func (@CALL_FUNCS) {
 			ok $@, "set authorizer dies with error: $@";
 		}
 
-		if ($DBD::SQLite::sqlite_version_number >= 3006011) {
+		if ($DBD::SQLcipher::sqlite_version_number >= 3006011) {
 			local $@;
 			eval { $dbh->$call_func('./backup_file', 'backup_from_file') };
 			ok $@, "backup from file dies with error: $@";
 		}
 
-		if ($DBD::SQLite::sqlite_version_number >= 3006011) {
+		if ($DBD::SQLcipher::sqlite_version_number >= 3006011) {
 			local $@;
 			eval { $dbh->$call_func('./backup_file', 'backup_to_file') };
 			ok $@, "backup to file dies with error: $@";

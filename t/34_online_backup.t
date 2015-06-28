@@ -28,7 +28,7 @@ foreach my $call_func (@CALL_FUNCS) {
 	$foo->disconnect;
 
 	my $dbh = DBI->connect(
-	    'dbi:SQLite:dbname=:memory:',
+	    'dbi:SQLcipher:dbname=:memory:',
 	    undef, undef,
 	    { RaiseError => 1 }
 	);

@@ -3,7 +3,7 @@
 #define NEED_newSVpvn_flags
 #define NEED_sv_2pvbyte
 
-#include "SQLiteXS.h"
+#include "SQLcipherXS.h"
 
 START_MY_CXT;
 
@@ -207,7 +207,7 @@ _sqlite_error(pTHX_ char *file, int line, SV *h, int rc, const char *what)
 
     DBIh_SET_ERR_CHAR(h, imp_xxh, Nullch, rc, what, Nullch, Nullch);
 
-    /* #7753: DBD::SQLite error shouldn't include extraneous info */
+    /* #7753: DBD::SQLcipher error shouldn't include extraneous info */
     /* sv_catpvf(errstr, "(%d) at %s line %d", rc, file, line); */
     if ( DBIc_TRACE_LEVEL(imp_xxh) >= 3 ) {
         PerlIO_printf(
@@ -476,7 +476,7 @@ sqlite_db_login6(SV *dbh, imp_dbh_t *imp_dbh, char *dbname, char *user, char *pa
     }
     rc = sqlite_open2(dbname, &(imp_dbh->db), flag, extended);
     if ( rc != SQLITE_OK ) {
-        return FALSE; /* -> undef in lib/DBD/SQLite.pm */
+        return FALSE; /* -> undef in lib/DBD/SQLcipher.pm */
     }
     DBIc_IMPSET_on(imp_dbh);
 
@@ -532,7 +532,7 @@ sqlite_db_do_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *sv_statement)
 
     if (!DBIc_ACTIVE(imp_dbh)) {
         sqlite_error(dbh, -2, "attempt to do on inactive database handle");
-        return -2; /* -> undef in SQLite.xsi */
+        return -2; /* -> undef in SQLcipher.xsi */
     }
 
     /* sqlite3_prepare wants an utf8-encoded SQL statement */
@@ -563,7 +563,7 @@ sqlite_db_do_sv(SV *dbh, imp_dbh_t *imp_dbh, SV *sv_statement)
                 rc = sqlite_exec(dbh, "BEGIN TRANSACTION");
             }
             if (rc != SQLITE_OK) {
-                return -2; /* -> undef in SQLite.xsi */
+                return -2; /* -> undef in SQLcipher.xsi */
             }
         }
     }
@@ -617,7 +617,7 @@ sqlite_db_commit(SV *dbh, imp_dbh_t *imp_dbh)
 
         rc = sqlite_exec(dbh, "COMMIT TRANSACTION");
         if (rc != SQLITE_OK) {
-            return FALSE; /* -> &sv_no in SQLite.xsi */
+            return FALSE; /* -> &sv_no in SQLcipher.xsi */
         }
     }
 
@@ -648,7 +648,7 @@ sqlite_db_rollback(SV *dbh, imp_dbh_t *imp_dbh)
 
         rc = sqlite_exec(dbh, "ROLLBACK TRANSACTION");
         if (rc != SQLITE_OK) {
-            return FALSE; /* -> &sv_no in SQLite.xsi */
+            return FALSE; /* -> &sv_no in SQLcipher.xsi */
         }
     }
 
@@ -857,7 +857,7 @@ sqlite_st_prepare_sv(SV *sth, imp_sth_t *imp_sth, SV *sv_statement, SV *attribs)
 
     if (!DBIc_ACTIVE(imp_dbh)) {
         sqlite_error(sth, -2, "attempt to prepare on inactive database handle");
-        return FALSE; /* -> undef in lib/DBD/SQLite.pm */
+        return FALSE; /* -> undef in lib/DBD/SQLcipher.pm */
     }
 
     /* sqlite3_prepare wants an utf8-encoded SQL statement */
@@ -870,7 +870,7 @@ sqlite_st_prepare_sv(SV *sth, imp_sth_t *imp_sth, SV *sv_statement, SV *attribs)
 #if 0
     if (*statement == '\0') {
         sqlite_error(sth, -2, "attempt to prepare empty statement");
-        return FALSE; /* -> undef in lib/DBD/SQLite.pm */
+        return FALSE; /* -> undef in lib/DBD/SQLcipher.pm */
     }
 #endif
 
@@ -893,7 +893,7 @@ sqlite_st_prepare_sv(SV *sth, imp_sth_t *imp_sth, SV *sv_statement, SV *attribs)
                 sqlite_error(sth, rc, sqlite3_errmsg(imp_dbh->db));
             }
         }
-        return FALSE; /* -> undef in lib/DBD/SQLite.pm */
+        return FALSE; /* -> undef in lib/DBD/SQLcipher.pm */
     }
     if (&extra) {
         imp_sth->unprepared_statements = extra;
@@ -933,7 +933,7 @@ sqlite_st_execute(SV *sth, imp_sth_t *imp_sth)
 
     if (!DBIc_ACTIVE(imp_dbh)) {
         sqlite_error(sth, -2, "attempt to execute on inactive database handle");
-        return -2; /* -> undef in SQLite.xsi */
+        return -2; /* -> undef in SQLcipher.xsi */
     }
 
     if (!imp_sth->stmt) return 0;
@@ -949,7 +949,7 @@ sqlite_st_execute(SV *sth, imp_sth_t *imp_sth)
          imp_sth->retval = sqlite3_reset(imp_sth->stmt);
          if (imp_sth->retval != SQLITE_OK) {
              sqlite_error(sth, imp_sth->retval, sqlite3_errmsg(imp_dbh->db));
-             return -2; /* -> undef in SQLite.xsi */
+             return -2; /* -> undef in SQLcipher.xsi */
          }
     }
 
@@ -1023,7 +1023,7 @@ sqlite_st_execute(SV *sth, imp_sth_t *imp_sth)
 
         if (rc != SQLITE_OK) {
             sqlite_error(sth, rc, sqlite3_errmsg(imp_dbh->db));
-            return -4; /* -> undef in SQLite.xsi */
+            return -4; /* -> undef in SQLcipher.xsi */
         }
     }
 
@@ -1045,7 +1045,7 @@ sqlite_st_execute(SV *sth, imp_sth_t *imp_sth)
                 rc = sqlite_exec(sth, "BEGIN TRANSACTION");
             }
             if (rc != SQLITE_OK) {
-                return -2; /* -> undef in SQLite.xsi */
+                return -2; /* -> undef in SQLcipher.xsi */
             }
         }
     }
@@ -1075,7 +1075,7 @@ sqlite_st_execute(SV *sth, imp_sth_t *imp_sth)
             if (sqlite3_reset(imp_sth->stmt) != SQLITE_OK) {
                 sqlite_error(sth, imp_sth->retval, sqlite3_errmsg(imp_dbh->db));
             }
-            return -5; /* -> undef in SQLite.xsi */
+            return -5; /* -> undef in SQLcipher.xsi */
         }
         /* warn("Finalize\n"); */
         sqlite3_reset(imp_sth->stmt);
@@ -1095,13 +1095,13 @@ sqlite_st_execute(SV *sth, imp_sth_t *imp_sth)
                 DBIc_on(imp_dbh,  DBIcf_BegunWork);
                 DBIc_off(imp_dbh, DBIcf_AutoCommit);
             }
-            return 0; /* -> '0E0' in SQLite.xsi */
+            return 0; /* -> '0E0' in SQLcipher.xsi */
         default:
             sqlite_error(sth, imp_sth->retval, sqlite3_errmsg(imp_dbh->db));
             if (sqlite3_reset(imp_sth->stmt) != SQLITE_OK) {
                 sqlite_error(sth, imp_sth->retval, sqlite3_errmsg(imp_dbh->db));
             }
-            return -6; /* -> undef in SQLite.xsi */
+            return -6; /* -> undef in SQLcipher.xsi */
     }
 }
 
@@ -1140,7 +1140,7 @@ sqlite_st_fetch(SV *sth, imp_sth_t *imp_sth)
         /* error */
         sqlite_error(sth, imp_sth->retval, sqlite3_errmsg(imp_dbh->db));
         sqlite_st_finish(sth, imp_sth);
-        return Nullav; /* -> undef in SQLite.xsi */
+        return Nullav; /* -> undef in SQLcipher.xsi */
     }
 
     imp_sth->nrow++;
@@ -1238,7 +1238,7 @@ sqlite_st_finish3(SV *sth, imp_sth_t *imp_sth, int is_destroy)
 
     if ((imp_sth->retval = sqlite3_reset(imp_sth->stmt)) != SQLITE_OK) {
         sqlite_error(sth, imp_sth->retval, sqlite3_errmsg(imp_dbh->db));
-        return FALSE; /* -> &sv_no (or void) in SQLite.xsi */
+        return FALSE; /* -> &sv_no (or void) in SQLcipher.xsi */
     }
 
     return TRUE;
@@ -1432,7 +1432,7 @@ sqlite_bind_ph(SV *sth, imp_sth_t *imp_sth,
 
     if (is_inout) {
         sqlite_error(sth, -2, "InOut bind params not implemented");
-        return FALSE; /* -> &sv_no in SQLite.xsi */
+        return FALSE; /* -> &sv_no in SQLcipher.xsi */
     }
 
     if (!looks_like_number(param)) {
@@ -1443,13 +1443,13 @@ sqlite_bind_ph(SV *sth, imp_sth_t *imp_sth,
             pos = sqlite3_bind_parameter_index(imp_sth->stmt, paramstring);
             if (pos == 0) {
                 sqlite_error(sth, -2, form("Unknown named parameter: %s", paramstring));
-                return FALSE; /* -> &sv_no in SQLite.xsi */
+                return FALSE; /* -> &sv_no in SQLcipher.xsi */
             }
             pos = 2 * (pos - 1);
         }
         else {
             sqlite_error(sth, -2, "<param> could not be coerced to a C string");
-            return FALSE; /* -> &sv_no in SQLite.xsi */
+            return FALSE; /* -> &sv_no in SQLcipher.xsi */
         }
     }
     else {
@@ -1929,7 +1929,7 @@ sqlite_db_aggr_finalize_dispatcher( sqlite3_context *context )
     SAVETMPS;
 
     if ( !aggr ) {
-        /* SQLite seems to refuse to create a context structure
+        /* SQLcipher seems to refuse to create a context structure
            from finalize() */
         aggr = &myAggr;
         aggr->aggr_inst = NULL;
@@ -1964,7 +1964,7 @@ sqlite_db_aggr_finalize_dispatcher( sqlite3_context *context )
     }
 
     if ( aggr->err ) {
-        warn( "DBD::SQLite: error in aggregator cannot be reported to SQLite: %s",
+        warn( "DBD::SQLcipher: error in aggregator cannot be reported to SQLcipher: %s",
             SvPV_nolen( aggr->err ) );
 
         /* sqlite_set_result(aTHX_ context, aggr->err, 1); */
@@ -2552,7 +2552,7 @@ sqlite_db_profile(pTHX_ SV *dbh, SV *func)
     return TRUE;
 }
 
-/* Accesses the SQLite Online Backup API, and fills the currently loaded
+/* Accesses the SQLcipher Online Backup API, and fills the currently loaded
  * database from the passed filename.
  * Usual usage of this would be when you're operating on the :memory:
  * special database connection and want to copy it in from a real db.
@@ -2595,12 +2595,12 @@ sqlite_db_backup_from_file(pTHX_ SV *dbh, char *filename)
 
     return TRUE;
 #else
-    sqlite_error(dbh, SQLITE_ERROR, form("backup feature requires SQLite 3.6.11 and newer"));
+    sqlite_error(dbh, SQLITE_ERROR, form("backup feature requires SQLcipher 3.6.11 and newer"));
     return FALSE;
 #endif
 }
 
-/* Accesses the SQLite Online Backup API, and copies the currently loaded
+/* Accesses the SQLcipher Online Backup API, and copies the currently loaded
  * database into the passed filename.
  * Usual usage of this would be when you're operating on the :memory:
  * special database connection, and want to back it up to an on-disk file.
@@ -2643,7 +2643,7 @@ sqlite_db_backup_to_file(pTHX_ SV *dbh, char *filename)
 
     return TRUE;
 #else
-    sqlite_error(dbh, SQLITE_ERROR, form("backup feature requires SQLite 3.6.11 and newer"));
+    sqlite_error(dbh, SQLITE_ERROR, form("backup feature requires SQLcipher 3.6.11 and newer"));
     return FALSE;
 #endif
 }

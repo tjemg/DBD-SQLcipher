@@ -8,12 +8,12 @@ BEGIN {
 
 use t::lib::Test;
 use Test::More;
-use DBD::SQLite;
+use DBD::SQLcipher;
 use Data::Dumper;
 
 # NOTE: It seems to be better to compare rounded values
 # because stored coordinate values may have slight errors
-# since SQLite 3.7.13 (DBD::SQLite 1.38_01).
+# since SQLcipher 3.7.13 (DBD::SQLcipher 1.38_01).
 
 sub is_deeply_approx {
     my ($got, $expected, $name) = @_;
@@ -53,8 +53,8 @@ my @test_results = (
 );
 
 BEGIN {
-	if (!grep /ENABLE_RTREE/, DBD::SQLite::compile_options()) {
-		plan skip_all => 'RTREE is disabled for this DBD::SQLite';
+	if (!grep /ENABLE_RTREE/, DBD::SQLcipher::compile_options()) {
+		plan skip_all => 'RTREE is disabled for this DBD::SQLcipher';
 	}
 }
 use Test::NoWarnings;
@@ -95,7 +95,7 @@ SELECT id FROM try_rtree
     WHERE  minX >= ? AND maxX <= ?
     AND    minY >= ? AND maxY <= ?
 
-# Since SQLite 3.7.13, coordinate values may have slight errors.
+# Since SQLcipher 3.7.13, coordinate values may have slight errors.
 for my $region (@test_regions) {
     my $results = $dbh->selectcol_arrayref($contained_sql, undef, @$region);
     is_deeply_approx($results, shift @test_results);

@@ -21,7 +21,7 @@ BEGIN {
 }
 use Test::NoWarnings;
 use Encode qw/decode/;
-use DBD::SQLite;
+use DBD::SQLcipher;
 
 BEGIN {
 	# Sadly perl for windows (and probably sqlite, too) may hang
@@ -54,7 +54,7 @@ sub by_num_desc ($$) {
 
 
 # collation 'no_accents' will be automatically loaded on demand
-$DBD::SQLite::COLLATION{no_accents} = \&no_accents;
+$DBD::SQLcipher::COLLATION{no_accents} = \&no_accents;
 
 
 $" = ", "; # to embed arrays into message strings
@@ -65,24 +65,24 @@ my $sql = "SELECT txt from collate_test ORDER BY txt";
 
 # test interaction with the global COLLATION hash ("WriteOnce")
 
-dies (sub {$DBD::SQLite::COLLATION{perl} = sub {}},
+dies (sub {$DBD::SQLcipher::COLLATION{perl} = sub {}},
       qr/already registered/,
       "can't override builtin perl collation");
 
-dies (sub {delete $DBD::SQLite::COLLATION{perl}},
+dies (sub {delete $DBD::SQLcipher::COLLATION{perl}},
       qr/deletion .* is forbidden/,
       "can't delete builtin perl collation");
 
 # once a collation is registered, we can't override it ... unless by
 # digging into the tied object
-$DBD::SQLite::COLLATION{foo} = \&by_num;
-dies (sub {$DBD::SQLite::COLLATION{foo} = \&by_num_desc},
+$DBD::SQLcipher::COLLATION{foo} = \&by_num;
+dies (sub {$DBD::SQLcipher::COLLATION{foo} = \&by_num_desc},
       qr/already registered/,
       "can't override registered collation");
-my $tied = tied %DBD::SQLite::COLLATION;
+my $tied = tied %DBD::SQLcipher::COLLATION;
 delete $tied->{foo};
-$DBD::SQLite::COLLATION{foo} = \&by_num_desc; # override, no longer dies
-is($DBD::SQLite::COLLATION{foo}, \&by_num_desc, "overridden collation");
+$DBD::SQLcipher::COLLATION{foo} = \&by_num_desc; # override, no longer dies
+is($DBD::SQLcipher::COLLATION{foo}, \&by_num_desc, "overridden collation");
 
 
 

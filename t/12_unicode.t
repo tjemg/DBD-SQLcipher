@@ -57,7 +57,7 @@ ok(
 
 # Sends $ain and $bin into TEXT resp. BLOB columns the database, then
 # reads them again and returns the result as a list ($aout, $bout).
-### Real DBD::SQLite testing starts here
+### Real DBD::SQLcipher testing starts here
 my ($textback, $bytesback);
 SCOPE: {
 	my $dbh = connect_ok( dbfile => 'foo', RaiseError => 1 );

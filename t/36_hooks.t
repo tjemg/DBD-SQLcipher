@@ -10,7 +10,7 @@ use t::lib::Test     qw/connect_ok @CALL_FUNCS/;
 use Test::More;
 use Test::NoWarnings qw/had_no_warnings clear_warnings/;
 
-use DBD::SQLite;
+use DBD::SQLcipher;
 
 plan tests => 24 * @CALL_FUNCS + 1;
 
@@ -50,7 +50,7 @@ foreach my $call_func (@CALL_FUNCS) {
   is($n_updates, 30, "30 updates");
 
   # check args transmitted to update hook;
-  is($update_args[0], DBD::SQLite::INSERT, 'update hook arg 0: INSERT');
+  is($update_args[0], DBD::SQLcipher::INSERT, 'update hook arg 0: INSERT');
   is($update_args[1], 'temp',              'update hook arg 1: database');
   is($update_args[2], 'hook_test',         'update hook arg 2: table');
   ok($update_args[3],                      'update hook arg 3: rowid');
@@ -81,7 +81,7 @@ foreach my $call_func (@CALL_FUNCS) {
   eval {do_transaction($dbh)}; # in eval() because of RaiseError
   ok ($@, "transaction was rejected: $@" );
 
-  # no explicit rollback, because SQLite already did it
+  # no explicit rollback, because SQLcipher already did it
   # eval {$dbh->rollback;};
   # ok (!$@, "rollback OK $@");
 
@@ -108,8 +108,8 @@ foreach my $call_func (@CALL_FUNCS) {
   my $authorizer = sub {
     @authorizer_args = @_;
     my $action_code = shift;
-    my $retval = $action_code == DBD::SQLite::DELETE ? DBD::SQLite::DENY
-                                                     : DBD::SQLite::OK;
+    my $retval = $action_code == DBD::SQLcipher::DELETE ? DBD::SQLcipher::DENY
+                                                     : DBD::SQLcipher::OK;
     return $retval;
   };
   $dbh->$call_func($authorizer, "set_authorizer");
@@ -117,14 +117,14 @@ foreach my $call_func (@CALL_FUNCS) {
   # try an insert (should be authorized) and check authorizer args
   $dbh->do("INSERT INTO hook_test VALUES ('auth_test')");
   is_deeply(\@authorizer_args, 
-            [DBD::SQLite::INSERT, 'hook_test', undef, 'temp', undef],
+            [DBD::SQLcipher::INSERT, 'hook_test', undef, 'temp', undef],
             "args to authorizer (INSERT)");
 
   # try a delete (should be unauthorized)
   eval {$dbh->do("DELETE FROM hook_test WHERE foo = 'auth_test'")};
   ok($@, "delete was rejected with message $@");
   is_deeply(\@authorizer_args, 
-            [DBD::SQLite::DELETE, 'hook_test', undef, 'temp', undef],
+            [DBD::SQLcipher::DELETE, 'hook_test', undef, 'temp', undef],
             "args to authorizer (DELETE)");
 
 

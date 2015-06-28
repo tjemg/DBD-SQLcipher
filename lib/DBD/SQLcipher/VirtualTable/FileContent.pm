@@ -1,9 +1,9 @@
 #======================================================================
-package DBD::SQLite::VirtualTable::FileContent;
+package DBD::SQLcipher::VirtualTable::FileContent;
 #======================================================================
 use strict;
 use warnings;
-use base 'DBD::SQLite::VirtualTable';
+use base 'DBD::SQLcipher::VirtualTable';
 
 my %option_ok = map {($_ => 1)} qw/source content_col path_col
                                    expose root get_content/;
@@ -12,7 +12,7 @@ my %defaults = (
   content_col => "content",
   path_col    => "path",
   expose      => "*",
-  get_content => "DBD::SQLite::VirtualTable::FileContent::get_content",
+  get_content => "DBD::SQLcipher::VirtualTable::FileContent::get_content",
 );
 
 
@@ -112,7 +112,7 @@ sub BEST_INDEX {
     my $colname = $col == -1 ? "rowid" : $self->{headers}[$col];
     push @conditions, "$colname $constraint->{op} ?";
     $constraint->{argvIndex} = $ix++;
-    $constraint->{omit}      = 1;     # SQLite doesn't need to re-check the op
+    $constraint->{omit}      = 1;     # SQLcipher doesn't need to re-check the op
   }
 
   # TODO : exploit $order_by to add ordering clauses within idxStr
@@ -165,11 +165,11 @@ sub get_content {
 
 
 #======================================================================
-package DBD::SQLite::VirtualTable::FileContent::Cursor;
+package DBD::SQLcipher::VirtualTable::FileContent::Cursor;
 #======================================================================
 use strict;
 use warnings;
-use base "DBD::SQLite::VirtualTable::Cursor";
+use base "DBD::SQLcipher::VirtualTable::Cursor";
 
 
 sub FILTER {
@@ -238,14 +238,14 @@ __END__
 
 =head1 NAME
 
-DBD::SQLite::VirtualTable::FileContent -- virtual table for viewing file contents
+DBD::SQLcipher::VirtualTable::FileContent -- virtual table for viewing file contents
 
 
 =head1 SYNOPSIS
 
 Within Perl :
 
-  $dbh->sqlite_create_module(fcontent => "DBD::SQLite::VirtualTable::FileContent");
+  $dbh->sqlite_create_module(fcontent => "DBD::SQLcipher::VirtualTable::FileContent");
 
 Then, within SQL :
 
@@ -268,7 +268,7 @@ table behaves like a database view on the source table, with an added
 column which exposes the content from those files.
 
 This is especially useful as an "external content" to some
-fulltext table (see L<DBD::SQLite::Fulltext_search>) : the index
+fulltext table (see L<DBD::SQLcipher::Fulltext_search>) : the index
 table stores some metadata about files, and then the fulltext engine
 can index both the metadata and the file contents.
 

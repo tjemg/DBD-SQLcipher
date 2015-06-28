@@ -18,24 +18,24 @@ plan skip_all => "\$FindBin::Bin points to a nonexistent path for some reason: $
 my $dbfile = "tmp.sqlite";
 
 my @tests = (
-  ["VirtualTable"   => qw[lib/DBD/SQLite.pm
-                          lib/DBD/SQLite/VirtualTable.pm
-                          lib/DBD/SQLite/VirtualTable/FileContent.pm
-                          lib/DBD/SQLite/VirtualTable/PerlData.pm]],
-  ["install_method" => qw[lib/DBD/SQLite.pm]],
+  ["VirtualTable"   => qw[lib/DBD/SQLcipher.pm
+                          lib/DBD/SQLcipher/VirtualTable.pm
+                          lib/DBD/SQLcipher/VirtualTable/FileContent.pm
+                          lib/DBD/SQLcipher/VirtualTable/PerlData.pm]],
+  ["install_method" => qw[lib/DBD/SQLcipher.pm]],
   ['"use strict"'   => qw[inc/Test/NoWarnings.pm
                           inc/Test/NoWarnings/Warning.pm
-                          lib/DBD/SQLite.pm
-                          lib/DBD/SQLite/Constants.pm
-                          lib/DBD/SQLite/VirtualTable.pm
-                          lib/DBD/SQLite/VirtualTable/FileContent.pm
-                          lib/DBD/SQLite/VirtualTable/PerlData.pm
+                          lib/DBD/SQLcipher.pm
+                          lib/DBD/SQLcipher/Constants.pm
+                          lib/DBD/SQLcipher/VirtualTable.pm
+                          lib/DBD/SQLcipher/VirtualTable/FileContent.pm
+                          lib/DBD/SQLcipher/VirtualTable/PerlData.pm
                           t/lib/Test.pm]],
   ['"use strict" AND "use warnings"' => qw[inc/Test/NoWarnings.pm
-                                           lib/DBD/SQLite/Constants.pm
-                                           lib/DBD/SQLite/VirtualTable.pm
-                                           lib/DBD/SQLite/VirtualTable/FileContent.pm
-                                           lib/DBD/SQLite/VirtualTable/PerlData.pm
+                                           lib/DBD/SQLcipher/Constants.pm
+                                           lib/DBD/SQLcipher/VirtualTable.pm
+                                           lib/DBD/SQLcipher/VirtualTable/FileContent.pm
+                                           lib/DBD/SQLcipher/VirtualTable/PerlData.pm
                                            ]],
 );
 
@@ -59,7 +59,7 @@ $sth->execute($_) foreach @perl_files;
 
 
 # create the virtual table
-$dbh->$sqlite_call(create_module => fc => "DBD::SQLite::VirtualTable::FileContent");
+$dbh->$sqlite_call(create_module => fc => "DBD::SQLcipher::VirtualTable::FileContent");
 $dbh->do(<<"");
   CREATE VIRTUAL TABLE vfc USING fc(source = files,
                                     expose = "path",
@@ -80,7 +80,7 @@ foreach my $test (@tests) {
 }
 
 # remove one document
-my $remove_path = 'lib/DBD/SQLite/VirtualTable.pm';
+my $remove_path = 'lib/DBD/SQLcipher/VirtualTable.pm';
 $dbh->do("DELETE FROM fts WHERE path='$remove_path'");
 
 
@@ -96,7 +96,7 @@ foreach my $test (@tests) {
 $dbh->disconnect;
 undef $dbh;
 $dbh = connect_ok( dbfile => $dbfile, RaiseError => 1, AutoCommit => 1 );
-$dbh->$sqlite_call(create_module => fc => "DBD::SQLite::VirtualTable::FileContent");
+$dbh->$sqlite_call(create_module => fc => "DBD::SQLcipher::VirtualTable::FileContent");
 
 foreach my $test (@tests) {
   my ($pattern, @expected)  = @$test;

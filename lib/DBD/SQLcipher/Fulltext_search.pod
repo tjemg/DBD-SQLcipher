@@ -1,18 +1,18 @@
 =head1 NAME
 
-DBD::SQLite::Fulltext_search - Using fulltext searches with DBD::SQLite
+DBD::SQLcipher::Fulltext_search - Using fulltext searches with DBD::SQLcipher
 
 =head1 DESCRIPTION
 
 =head2 Introduction
 
-SQLite is bundled with an extension module called "FTS" for full-text
+SQLcipher is bundled with an extension module called "FTS" for full-text
 indexing. Tables with this feature enabled can be efficiently queried
 to find rows that contain one or more instances of some specified
 words (also called "tokens"), in any column, even if the table contains many
 large documents.
 
-The first full-text search modules for SQLite were called C<FTS1> and C<FTS2>
+The first full-text search modules for SQLcipher were called C<FTS1> and C<FTS2>
 and are now obsolete. The latest version is C<FTS4>, but it shares many
 features with the former module C<FTS3>, which is why parts of the 
 API and parts of the documentation still refer to C<FTS3>; from a client
@@ -52,7 +52,7 @@ In addition, FTS tables have an implicit column called C<docid>
 =item *
 
 Statements for inserting, updating or deleting records 
-use the same syntax as for regular SQLite tables.
+use the same syntax as for regular SQLcipher tables.
 
 =item *
 
@@ -153,11 +153,11 @@ number of intervening terms allowed. For example:
   CREATE VIRTUAL TABLE docs USING fts4();
 
   -- Virtual table data.
-  INSERT INTO docs VALUES('SQLite is an ACID compliant embedded relational database management system');
+  INSERT INTO docs VALUES('SQLcipher is an ACID compliant embedded relational database management system');
 
   -- Search for a document that contains the terms "sqlite" and "database" with
   -- not more than 10 intervening terms. This matches the only document in
-  -- table docs (since there are only six terms between "SQLite" and "database" 
+  -- table docs (since there are only six terms between "SQLcipher" and "database" 
   -- in the document).
   SELECT * FROM docs WHERE docs MATCH 'sqlite NEAR database';
 
@@ -237,11 +237,11 @@ operator" is a more succinct version of "implicit AND operator".
 
 Boolean operations as just described correspond to the so-called
 "enhanced query syntax" of sqlite; this is the version compiled 
-with C<DBD::SQLite>, starting from version 1.31.
+with C<DBD::SQLcipher>, starting from version 1.31.
 A former version, called the "standard query syntax", used to
 support tokens prefixed with '+' or '-' signs (for token inclusion
 or exclusion); if your application needs to support this old
-syntax, use  L<DBD::SQLite::FTS3Transitional> (published
+syntax, use  L<DBD::SQLcipher::FTS3Transitional> (published
 in a separate distribution) for doing the conversion.
 
 =head1 TOKENIZERS
@@ -257,12 +257,12 @@ tokenization:
 
 where C<< <tokenizer> >> is a sequence of space-separated
 words that triggers a specific tokenizer. Tokenizers can
-be SQLite builtins, written in C code, or Perl tokenizers.
+be SQLcipher builtins, written in C code, or Perl tokenizers.
 Both are as explained below.
 
-=head2 SQLite builtin tokenizers
+=head2 SQLcipher builtin tokenizers
 
-SQLite comes with some builtin tokenizers (see
+SQLcipher comes with some builtin tokenizers (see
 L<http://www.sqlite.org/fts3.html#tokenizer>) :
 
 =over
@@ -292,10 +292,10 @@ words to a common root.
 
 The I<icu> tokenizer uses the ICU library to decide how to
 identify word characters in different languages; however, this
-requires SQLite to be compiled with the C<SQLITE_ENABLE_ICU>
+requires SQLcipher to be compiled with the C<SQLITE_ENABLE_ICU>
 pre-processor symbol defined. So, to use this tokenizer, you need
 edit F<Makefile.PL> to add this flag in C<@CC_DEFINE>, and then
-recompile C<DBD::SQLite>; of course, the prerequisite is to have
+recompile C<DBD::SQLcipher>; of course, the prerequisite is to have
 an ICU library available on your system.
 
 =item unicode61
@@ -334,7 +334,7 @@ use the perl tokenizer to implement your own logic, as explained below.
 
 =head3 Declaring a perl tokenizer
 
-In addition to the builtin SQLite tokenizers, C<DBD::SQLite>
+In addition to the builtin SQLcipher tokenizers, C<DBD::SQLcipher>
 implements a I<perl> tokenizer, that can hook to any tokenizing
 algorithm written in Perl. This is specified as follows :
 
@@ -463,7 +463,7 @@ an explicit integer docid value. For example:
 
 Of course your application will need an algorithm for finding
 the external resource corresponding to any I<docid> stored within
-SQLite.
+SQLcipher.
 
 When using placeholders, the docid must be explicitly typed to 
 INTEGER, because this is a "hidden column" for which sqlite 

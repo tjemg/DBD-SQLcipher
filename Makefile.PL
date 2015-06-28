@@ -25,14 +25,14 @@ sub OPTIONAL {
 
 # Are we upgrading from a critically out of date version?
 eval {
-	require DBD::SQLite;
-	if ( $DBD::SQLite::VERSION < 1.0 ) {
+	require DBD::SQLcipher;
+	if ( $DBD::SQLcipher::VERSION < 1.0 ) {
 		print <<EOT;
 
 **** WARNING **** WARNING **** WARNING **** WARNING **** WARNING ****
 
-Your version of DBD::SQLite currently installed ($DBD::SQLite::VERSION) uses
-the old sqlite database format. This version of DBD::SQLite will *NOT*
+Your version of DBD::SQLcipher currently installed ($DBD::SQLcipher::VERSION) uses
+the old sqlite database format. This version of DBD::SQLcipher will *NOT*
 open these files, and installing this module may cause problems on your
 system. If this is a live environment you should upgrade with caution.
 
@@ -41,8 +41,8 @@ http://www.sqlite.org/ and issue:
 
   sqlite OLD.DB .dump | sqlite3 NEW.DB
 
-DBD::SQLite will NOT automatically upgrade a database for you, and using
-this version against an old SQLite database WILL lead to database
+DBD::SQLcipher will NOT automatically upgrade a database for you, and using
+this version against an old SQLcipher database WILL lead to database
 corruption.
 
 EOT
@@ -176,18 +176,18 @@ SCOPE: {
 	}
 }
 
-# Determine if we are going to use the provided SQLite code, or an already-
+# Determine if we are going to use the provided SQLcipher code, or an already-
 # installed copy. To this end, look for two command-line parameters:
 #
 #    USE_LOCAL_SQLITE -- If non-false, force use of the installed version
 #    SQLITE_LOCATION  -- If passed, look for headers and libs under this root
 #
-# In absense of either of those, expect SQLite 3.X.X libs and headers in the
+# In absense of either of those, expect SQLcipher 3.X.X libs and headers in the
 # common places known to Perl or the C compiler.
 # 
 # Note to Downstream Packagers:
 # This block is if ( 0 ) to discourage casual users building against
-# the system SQLite. We expect that anyone sophisticated enough to use
+# the system SQLcipher. We expect that anyone sophisticated enough to use
 # a system sqlite is also sophisticated enough to have a patching system
 # that can change the if ( 0 ) to if ( 1 )
 my ($sqlite_local, $sqlite_base, $sqlite_lib, $sqlite_inc);
@@ -212,7 +212,7 @@ if ( 0 ) {
 	# Now check for a compatible sqlite3
 	unless ( $sqlite_local ) {
 		my ($dir, $file, $fh, $version);
-		print "Checking installed SQLite version...\n" if $ENV{AUTOMATED_TESTING};
+		print "Checking installed SQLcipher version...\n" if $ENV{AUTOMATED_TESTING};
 		if ( $sqlite_inc ) {
 			open($fh, '< ' , File::Spec->catfile($sqlite_inc, 'sqlite3.h'))
 				or die "Error opening sqlite3.h in $sqlite_inc: $!";
@@ -240,7 +240,7 @@ if ( 0 ) {
 			}
 		}
 		unless ( $version && ($version >= 3006000) ) {
-			warn "SQLite version must be at least 3.6.0. No header file at that\n";
+			warn "SQLcipher version must be at least 3.6.0. No header file at that\n";
 			warn "version or higher was found. Using the local version instead.\n";
 			$sqlite_local = 1;
 			undef $sqlite_lib;
@@ -357,6 +357,8 @@ my %CC_OPTIONS = (
 	DEFINE       => join( ' ', @CC_DEFINE ),
 );
 
+push @LDDLFLAGS, '-lssl';
+
 $CC_OPTIONS{LIBS}      = join ' ', @CC_LIBS if @CC_LIBS;
 $CC_OPTIONS{CCFLAGS}   = join ' ', $Config{ccflags}, @CCFLAGS if @CCFLAGS;
 $CC_OPTIONS{LDFLAGS}   = join ' ', $Config{ldflags}, @LDFLAGS if @LDFLAGS;
@@ -369,9 +371,9 @@ $CC_OPTIONS{LDDLFLAGS} = join ' ', $Config{lddlflags}, @LDDLFLAGS if @LDDLFLAGS;
 # Hand off to ExtUtils::MakeMaker
 
 WriteMakefile(
-	NAME             => 'DBD::SQLite',
-	ABSTRACT         => 'Self Contained SQLite RDBMS in a DBI Driver',
-	VERSION_FROM     => 'lib/DBD/SQLite.pm',
+	NAME             => 'DBD::SQLcipher',
+	ABSTRACT         => 'Self Contained SQLcipher RDBMS in a DBI Driver',
+	VERSION_FROM     => 'lib/DBD/SQLcipher.pm',
 	AUTHOR           => 'Adam Kennedy <adamk@cpan.org>',
 	# Release manager (can this be an array?)
 	PREREQ_PM        => {
@@ -424,8 +426,8 @@ WriteMakefile(
 			},
 			resources => {
 				license     => 'http://dev.perl.org/licenses/',
-				bugtracker  => 'http://rt.cpan.org/Public/Dist/Display.html?Name=DBD-SQLite',
-				repository  => 'https://github.com/DBD-SQLite/DBD-SQLite',
+				bugtracker  => 'http://rt.cpan.org/Public/Dist/Display.html?Name=DBD-SQLcipher',
+				repository  => 'https://github.com/DBD-SQLcipher/DBD-SQLcipher',
 				MailingList => 'http://lists.scsys.co.uk/cgi-bin/mailman/listinfo/dbd-sqlite',
 			},
 			no_index => {
@@ -437,10 +439,10 @@ WriteMakefile(
 	),
 	OBJECT           => ( $sqlite_local
 		? '$(O_FILES)'
-		: 'SQLite.o dbdimp.o'
+		: 'SQLcipher.o dbdimp.o'
 	),
 	clean            => {
-		FILES => 'SQLite.xsi config.h tv.log *.old',
+		FILES => 'SQLcipher.xsi config.h tv.log *.old',
 	},
         test             => {
                 TESTS => 't/*.t t/**/*.t',

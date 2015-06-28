@@ -14,15 +14,15 @@ plan tests => 15;
 
 my $dbh = connect_ok( RaiseError => 1, PrintError => 0, AutoCommit => 1 );
 
-$dbh->$sqlite_call(create_module => vtab => "DBD::SQLite::VirtualTable::T");
+$dbh->$sqlite_call(create_module => vtab => "DBD::SQLcipher::VirtualTable::T");
 
 ok $dbh->do("CREATE VIRTUAL TABLE foobar USING vtab(foo INTEGER, bar INTEGER)"),
    "created foobar";
 
 # overload functions "abs" and "substr"
-$DBD::SQLite::VirtualTable::T::funcs{abs}{overloaded} 
+$DBD::SQLcipher::VirtualTable::T::funcs{abs}{overloaded} 
   = sub {my $val = shift; return "fake_abs($val)" };
-$DBD::SQLite::VirtualTable::T::funcs{substr}{overloaded} 
+$DBD::SQLcipher::VirtualTable::T::funcs{substr}{overloaded} 
   = sub {my ($val, $offset, $len) = @_; return "fake_substr($val, $offset, $len)" };
 
 # make a first query
@@ -33,9 +33,9 @@ my $row = $dbh->selectrow_hashref(<<"");
          trim(foo) tfoo
   FROM foobar
 
-is $DBD::SQLite::VirtualTable::T::funcs{abs}{calls},    1, "abs called";
-is $DBD::SQLite::VirtualTable::T::funcs{substr}{calls}, 1, "substr called";
-is $DBD::SQLite::VirtualTable::T::funcs{trim}{calls},   1, "trim called";
+is $DBD::SQLcipher::VirtualTable::T::funcs{abs}{calls},    1, "abs called";
+is $DBD::SQLcipher::VirtualTable::T::funcs{substr}{calls}, 1, "substr called";
+is $DBD::SQLcipher::VirtualTable::T::funcs{trim}{calls},   1, "trim called";
 
 is_deeply $row, { 'abar' => 'fake_abs(1)',
                   'afoo' => 'fake_abs(0)',
@@ -50,9 +50,9 @@ $row = $dbh->selectrow_hashref(<<"");
          trim(foo) tfoo
   FROM foobar
 
-is $DBD::SQLite::VirtualTable::T::funcs{abs}{calls},    1, "abs still 1";
-is $DBD::SQLite::VirtualTable::T::funcs{substr}{calls}, 1, "substr still 1";
-is $DBD::SQLite::VirtualTable::T::funcs{trim}{calls},   1, "trim still 1";
+is $DBD::SQLcipher::VirtualTable::T::funcs{abs}{calls},    1, "abs still 1";
+is $DBD::SQLcipher::VirtualTable::T::funcs{substr}{calls}, 1, "substr still 1";
+is $DBD::SQLcipher::VirtualTable::T::funcs{trim}{calls},   1, "trim still 1";
 
 
 # new table : should issue new calls to FIND_FUNCTION
@@ -66,9 +66,9 @@ $row = $dbh->selectrow_hashref(<<"");
          trim(foo) tfoo
   FROM barfoo
 
-is $DBD::SQLite::VirtualTable::T::funcs{abs}{calls},    2, "abs now 2";
-is $DBD::SQLite::VirtualTable::T::funcs{substr}{calls}, 2, "substr now 2";
-is $DBD::SQLite::VirtualTable::T::funcs{trim}{calls},   2, "trim now 2";
+is $DBD::SQLcipher::VirtualTable::T::funcs{abs}{calls},    2, "abs now 2";
+is $DBD::SQLcipher::VirtualTable::T::funcs{substr}{calls}, 2, "substr now 2";
+is $DBD::SQLcipher::VirtualTable::T::funcs{trim}{calls},   2, "trim now 2";
 
 
 # drop table : should free references to functions
@@ -80,10 +80,10 @@ undef $dbh;
 note "done";
 
 
-package DBD::SQLite::VirtualTable::T;
+package DBD::SQLcipher::VirtualTable::T;
 use strict;
 use warnings;
-use base 'DBD::SQLite::VirtualTable';
+use base 'DBD::SQLcipher::VirtualTable';
 
 
 
@@ -120,15 +120,15 @@ sub FIND_FUNCTION {
 }
 
 
-package DBD::SQLite::VirtualTable::T::Cursor;
+package DBD::SQLcipher::VirtualTable::T::Cursor;
 use strict;
 use warnings;
-use base 'DBD::SQLite::VirtualTable::Cursor';
+use base 'DBD::SQLcipher::VirtualTable::Cursor';
 
 sub NEW {
   my $class = shift;
 
-  my $self = $class->DBD::SQLite::VirtualTable::Cursor::NEW(@_);
+  my $self = $class->DBD::SQLcipher::VirtualTable::Cursor::NEW(@_);
   $self->{row_count} = 5;
 
   return $self;

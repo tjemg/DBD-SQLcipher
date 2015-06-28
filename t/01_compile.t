@@ -12,12 +12,12 @@ BEGIN {
 use Test::More tests => 3;
 
 use_ok('DBI');
-use_ok('DBD::SQLite');
+use_ok('DBD::SQLcipher');
 use_ok('t::lib::Test');
 
 diag("\$DBI::VERSION=$DBI::VERSION");
 
-if (my @compile_options = DBD::SQLite::compile_options()) {
+if (my @compile_options = DBD::SQLcipher::compile_options()) {
     diag("Compile Options:");
     diag(join "", map { "  $_\n" } @compile_options);
 }

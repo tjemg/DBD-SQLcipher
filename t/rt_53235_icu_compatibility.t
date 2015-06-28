@@ -9,12 +9,12 @@ BEGIN {
 use t::lib::Test;
 use Test::More;
 BEGIN {
-    require DBD::SQLite;
-    if (DBD::SQLite->can('compile_options')
-        && grep /ENABLE_ICU/, DBD::SQLite::compile_options()) {
+    require DBD::SQLcipher;
+    if (DBD::SQLcipher->can('compile_options')
+        && grep /ENABLE_ICU/, DBD::SQLcipher::compile_options()) {
         plan( tests => 16 );
     } else {
-        plan( skip_all => 'requires SQLite ICU plugin to be enabled' );
+        plan( skip_all => 'requires SQLcipher ICU plugin to be enabled' );
     }
 }
 # use Test::NoWarnings;

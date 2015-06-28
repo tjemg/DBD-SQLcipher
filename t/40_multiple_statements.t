@@ -13,7 +13,7 @@ use Test::NoWarnings;
 plan tests => 21;
 
 {
-	# DBD::SQLite prepares/does the first statement only;
+	# DBD::SQLcipher prepares/does the first statement only;
 	# the following statements will be discarded silently.
 
 	my $dbh = connect_ok( RaiseError => 1 );

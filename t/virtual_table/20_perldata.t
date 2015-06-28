@@ -27,7 +27,7 @@ plan tests => $tests;
 my $dbh = connect_ok( RaiseError => 1, AutoCommit => 1 );
 
 ok $dbh->$sqlite_call(create_module =>
-                        perl => "DBD::SQLite::VirtualTable::PerlData"),
+                        perl => "DBD::SQLcipher::VirtualTable::PerlData"),
    "create_module";
 
 #======================================================================

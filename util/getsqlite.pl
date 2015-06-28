@@ -4,8 +4,8 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin";
-use SQLiteUtil;
+use SQLcipherUtil;
 
-my $version = SQLiteUtil::Version->new(shift || (versions())[-1]);
+my $version = SQLcipherUtil::Version->new(shift || (versions())[-1]);
 mirror($version);
 copy_files($version);

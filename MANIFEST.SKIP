@@ -26,5 +26,5 @@ CVS/.*
 ^\.git
 ^bugs/
 ^MYMETA\.[a-z]+$
-^SQLite.c$
+^SQLcipher.c$
 ^util/

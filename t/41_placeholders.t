@@ -43,8 +43,8 @@ $sth->execute;
 }
 
 SKIP: {
-	skip "this placeholder requires SQLite 3.6.19 and newer", 2 
-        unless $DBD::SQLite::sqlite_version_number && $DBD::SQLite::sqlite_version_number >= 3006019;
+	skip "this placeholder requires SQLcipher 3.6.19 and newer", 2 
+        unless $DBD::SQLcipher::sqlite_version_number && $DBD::SQLcipher::sqlite_version_number >= 3006019;
     ok $dbh->do(
 		'update foo set id = $1 where value = $2 and id is not $1',
 		undef, 3, 4

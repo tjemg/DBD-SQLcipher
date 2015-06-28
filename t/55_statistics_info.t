@@ -10,9 +10,9 @@ use t::lib::Test;
 use Test::More;
 
 BEGIN {
-    use DBD::SQLite;
-    unless ($DBD::SQLite::sqlite_version_number && $DBD::SQLite::sqlite_version_number >= 3006019) {
-        plan skip_all => "this test requires SQLite 3.6.19 and newer";
+    use DBD::SQLcipher;
+    unless ($DBD::SQLcipher::sqlite_version_number && $DBD::SQLcipher::sqlite_version_number >= 3006019) {
+        plan skip_all => "this test requires SQLcipher 3.6.19 and newer";
         exit;
     }
 }
@@ -51,7 +51,7 @@ plan tests => @sql_statements + 33;
 my $dbh = connect_ok( RaiseError => 1, PrintError => 0, AutoCommit => 1 );
 my $sth;
 my $stats_data;
-my $R = \%DBD::SQLite::db::DBI_code_for_rule;
+my $R = \%DBD::SQLcipher::db::DBI_code_for_rule;
 
 ok ($dbh->do($_), $_) foreach @sql_statements;
 

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin";
-use SQLiteUtil;
+use SQLcipherUtil;
 use Array::Diff;
 
 my %current;

@@ -1,17 +1,17 @@
 #define PERL_NO_GET_CONTEXT
 
-#include "SQLiteXS.h"
+#include "SQLcipherXS.h"
 
 DBISTATE_DECLARE;
 
-MODULE = DBD::SQLite          PACKAGE = DBD::SQLite::db
+MODULE = DBD::SQLcipher          PACKAGE = DBD::SQLcipher::db
 
 PROTOTYPES: DISABLE
 
 BOOT:
     init_cxt();
-    sv_setpv(get_sv("DBD::SQLite::sqlite_version",        TRUE|GV_ADDMULTI), SQLITE_VERSION);
-    sv_setiv(get_sv("DBD::SQLite::sqlite_version_number", TRUE|GV_ADDMULTI), SQLITE_VERSION_NUMBER);
+    sv_setpv(get_sv("DBD::SQLcipher::sqlite_version",        TRUE|GV_ADDMULTI), SQLITE_VERSION);
+    sv_setiv(get_sv("DBD::SQLcipher::sqlite_version_number", TRUE|GV_ADDMULTI), SQLITE_VERSION_NUMBER);
 
 void
 _do(dbh, statement)
@@ -35,7 +35,7 @@ IV
 last_insert_rowid(dbh)
     SV *dbh
     ALIAS:
-        DBD::SQLite::db::sqlite_last_insert_rowid = 1
+        DBD::SQLcipher::db::sqlite_last_insert_rowid = 1
     CODE:
     {
         D_imp_dbh(dbh);
@@ -52,7 +52,7 @@ create_function(dbh, name, argc, func, flags = 0)
     SV *func
     int flags
     ALIAS:
-        DBD::SQLite::db::sqlite_create_function = 1
+        DBD::SQLcipher::db::sqlite_create_function = 1
     CODE:
     {
         RETVAL = sqlite_db_create_function(aTHX_ dbh, name, argc, func, flags );
@@ -67,7 +67,7 @@ enable_load_extension(dbh, onoff)
     SV *dbh
     int onoff
     ALIAS:
-        DBD::SQLite::db::sqlite_enable_load_extension = 1
+        DBD::SQLcipher::db::sqlite_enable_load_extension = 1
     CODE:
     {
         RETVAL = sqlite_db_enable_load_extension(aTHX_ dbh, onoff );
@@ -81,7 +81,7 @@ load_extension(dbh, file, proc = 0)
     const char *file
     const char *proc
     ALIAS:
-        DBD::SQLite::db::sqlite_load_extension = 1
+        DBD::SQLcipher::db::sqlite_load_extension = 1
     CODE:
     {
         RETVAL = sqlite_db_load_extension(aTHX_ dbh, file, proc);
@@ -99,7 +99,7 @@ create_aggregate(dbh, name, argc, aggr, flags = 0)
     SV *aggr
     int flags
     ALIAS:
-        DBD::SQLite::db::sqlite_create_aggregate = 1
+        DBD::SQLcipher::db::sqlite_create_aggregate = 1
     CODE:
     {
         RETVAL = sqlite_db_create_aggregate(aTHX_ dbh, name, argc, aggr, flags );
@@ -113,7 +113,7 @@ create_collation(dbh, name, func)
     char *name
     SV *func
     ALIAS:
-        DBD::SQLite::db::sqlite_create_collation = 1
+        DBD::SQLcipher::db::sqlite_create_collation = 1
     CODE:
     {
         RETVAL = sqlite_db_create_collation(aTHX_ dbh, name, func );
@@ -127,7 +127,7 @@ collation_needed(dbh, callback)
     SV *dbh
     SV *callback
     ALIAS:
-        DBD::SQLite::db::sqlite_collation_needed = 1
+        DBD::SQLcipher::db::sqlite_collation_needed = 1
     CODE:
     {
         sqlite_db_collation_needed(aTHX_ dbh, callback );
@@ -140,7 +140,7 @@ progress_handler(dbh, n_opcodes, handler)
     int n_opcodes
     SV *handler
     ALIAS:
-        DBD::SQLite::db::sqlite_progress_handler = 1
+        DBD::SQLcipher::db::sqlite_progress_handler = 1
     CODE:
     {
         RETVAL = sqlite_db_progress_handler(aTHX_ dbh, n_opcodes, handler );
@@ -164,7 +164,7 @@ profile(dbh, callback)
     SV *dbh
     SV *callback
     ALIAS:
-        DBD::SQLite::db::sqlite_profile = 1
+        DBD::SQLcipher::db::sqlite_profile = 1
     CODE:
     {
         RETVAL = sqlite_db_profile(aTHX_ dbh, callback );
@@ -177,7 +177,7 @@ commit_hook(dbh, hook)
     SV *dbh
     SV *hook
     ALIAS:
-        DBD::SQLite::db::sqlite_commit_hook = 1
+        DBD::SQLcipher::db::sqlite_commit_hook = 1
     CODE:
     {
         RETVAL = (SV*) sqlite_db_commit_hook( aTHX_ dbh, hook );
@@ -190,7 +190,7 @@ rollback_hook(dbh, hook)
     SV *dbh
     SV *hook
     ALIAS:
-        DBD::SQLite::db::sqlite_rollback_hook = 1
+        DBD::SQLcipher::db::sqlite_rollback_hook = 1
     CODE:
     {
         RETVAL = (SV*) sqlite_db_rollback_hook( aTHX_ dbh, hook );
@@ -203,7 +203,7 @@ update_hook(dbh, hook)
     SV *dbh
     SV *hook
     ALIAS:
-        DBD::SQLite::db::sqlite_update_hook = 1
+        DBD::SQLcipher::db::sqlite_update_hook = 1
     CODE:
     {
         RETVAL = (SV*) sqlite_db_update_hook( aTHX_ dbh, hook );
@@ -217,7 +217,7 @@ set_authorizer(dbh, authorizer)
     SV *dbh
     SV *authorizer
     ALIAS:
-        DBD::SQLite::db::sqlite_set_authorizer = 1
+        DBD::SQLcipher::db::sqlite_set_authorizer = 1
     CODE:
     {
         RETVAL = sqlite_db_set_authorizer( aTHX_ dbh, authorizer );
@@ -231,7 +231,7 @@ busy_timeout(dbh, timeout=NULL)
     SV *dbh
     SV *timeout
     ALIAS:
-        DBD::SQLite::db::sqlite_busy_timeout = 1
+        DBD::SQLcipher::db::sqlite_busy_timeout = 1
     CODE:
         RETVAL = sqlite_db_busy_timeout(aTHX_ dbh, timeout );
     OUTPUT:
@@ -242,7 +242,7 @@ backup_from_file(dbh, filename)
     SV *dbh
     char *filename
     ALIAS:
-        DBD::SQLite::db::sqlite_backup_from_file = 1
+        DBD::SQLcipher::db::sqlite_backup_from_file = 1
     CODE:
         RETVAL = sqlite_db_backup_from_file(aTHX_ dbh, filename);
     OUTPUT:
@@ -253,7 +253,7 @@ backup_to_file(dbh, filename)
     SV *dbh
     char *filename
     ALIAS:
-        DBD::SQLite::db::sqlite_backup_to_file = 1
+        DBD::SQLcipher::db::sqlite_backup_to_file = 1
     CODE:
         RETVAL = sqlite_db_backup_to_file(aTHX_ dbh, filename);
     OUTPUT:
@@ -266,7 +266,7 @@ table_column_metadata(dbh, dbname, tablename, columnname)
     SV* tablename
     SV* columnname
     ALIAS:
-        DBD::SQLite::db::sqlite_table_column_metadata = 1
+        DBD::SQLcipher::db::sqlite_table_column_metadata = 1
     CODE:
         RETVAL = sqlite_db_table_column_metadata(aTHX_ dbh, dbname, tablename, columnname);
     OUTPUT:
@@ -276,7 +276,7 @@ SV*
 db_filename(dbh)
     SV* dbh
     ALIAS:
-        DBD::SQLite::db::sqlite_db_filename = 1
+        DBD::SQLcipher::db::sqlite_db_filename = 1
     CODE:
         RETVAL = sqlite_db_filename(aTHX_ dbh);
     OUTPUT:
@@ -286,7 +286,7 @@ static int
 register_fts3_perl_tokenizer(dbh)
     SV *dbh
     ALIAS:
-        DBD::SQLite::db::sqlite_register_fts3_perl_tokenizer = 1
+        DBD::SQLcipher::db::sqlite_register_fts3_perl_tokenizer = 1
     CODE:
         RETVAL = sqlite_db_register_fts3_perl_tokenizer(aTHX_ dbh);
     OUTPUT:
@@ -297,7 +297,7 @@ db_status(dbh, reset = 0)
     SV* dbh
     int reset
     ALIAS:
-        DBD::SQLite::db::sqlite_db_status = 1
+        DBD::SQLcipher::db::sqlite_db_status = 1
     CODE:
         RETVAL = (HV*)_sqlite_db_status(aTHX_ dbh, reset);
     OUTPUT:
@@ -310,7 +310,7 @@ create_module(dbh, name, perl_class)
     char *name
     char *perl_class
     ALIAS:
-        DBD::SQLite::db::sqlite_create_module = 1
+        DBD::SQLcipher::db::sqlite_create_module = 1
     CODE:
     {
         RETVAL = sqlite_db_create_module(aTHX_ dbh, name, perl_class);
@@ -319,7 +319,7 @@ create_module(dbh, name, perl_class)
         RETVAL
 
 
-MODULE = DBD::SQLite          PACKAGE = DBD::SQLite::st
+MODULE = DBD::SQLcipher          PACKAGE = DBD::SQLcipher::st
 
 PROTOTYPES: DISABLE
 
@@ -328,13 +328,13 @@ st_status(sth, reset = 0)
     SV* sth
     int reset
     ALIAS:
-        DBD::SQLite::st::sqlite_st_status = 1
+        DBD::SQLcipher::st::sqlite_st_status = 1
     CODE:
         RETVAL = (HV*)_sqlite_st_status(aTHX_ sth, reset);
     OUTPUT:
         RETVAL
 
-MODULE = DBD::SQLite          PACKAGE = DBD::SQLite
+MODULE = DBD::SQLcipher          PACKAGE = DBD::SQLcipher
 
 # a couple of constants exported from sqlite3.h
 
@@ -364,4 +364,4 @@ sqlite_status(reset = 0)
         RETVAL
 
 INCLUDE: constants.inc
-INCLUDE: SQLite.xsi
+INCLUDE: SQLcipher.xsi

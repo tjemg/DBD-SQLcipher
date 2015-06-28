@@ -37,7 +37,7 @@ if ( not defined( $pid = fork() ) ) {
 
 	# diag("Child starting... ($$)");
 	my $dbh = DBI->connect(
-		"dbi:SQLite:dbname=$dbfile", '', ''
+		"dbi:SQLcipher:dbname=$dbfile", '', ''
 	) or die 'connect failed';
 	$dbh->do($drop2) or die "DROP ok";
 	$dbh->disconnect or die "disconnect ok";

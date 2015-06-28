@@ -13,7 +13,7 @@ plan tests => 1 + 9;
 
 my $dbh = connect_ok( RaiseError => 1, PrintError => 0, AutoCommit => 1 );
 
-$dbh->$sqlite_call(create_module => vtab => "DBD::SQLite::VirtualTable::T");
+$dbh->$sqlite_call(create_module => vtab => "DBD::SQLcipher::VirtualTable::T");
 
 ok $dbh->do("CREATE VIRTUAL TABLE foobar USING vtab(foo INTEGER, bar INTEGER)");
 
@@ -36,10 +36,10 @@ $rows = $dbh->selectall_arrayref($sql, {Slice => {}});
 is scalar(@$rows), 5, "got 5 rows (because of omitted constraints)";
 
 
-package DBD::SQLite::VirtualTable::T;
+package DBD::SQLcipher::VirtualTable::T;
 use strict;
 use warnings;
-use base 'DBD::SQLite::VirtualTable';
+use base 'DBD::SQLcipher::VirtualTable';
 
 sub NEW {
   my $class = shift;
@@ -83,10 +83,10 @@ sub BEST_INDEX {
 
 
 
-package DBD::SQLite::VirtualTable::T::Cursor;
+package DBD::SQLcipher::VirtualTable::T::Cursor;
 use strict;
 use warnings;
-use base 'DBD::SQLite::VirtualTable::Cursor';
+use base 'DBD::SQLcipher::VirtualTable::Cursor';
 
 sub NEW {
   my $class = shift;

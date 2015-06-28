@@ -46,7 +46,7 @@ $sth->execute(@$_) foreach @$perl_rows;
 
 # create the virtual table
 ok $dbh->$sqlite_call(create_module =>
-                        perl => "DBD::SQLite::VirtualTable::PerlData"),
+                        perl => "DBD::SQLcipher::VirtualTable::PerlData"),
    "create_module";
 ok $dbh->do(<<""), "create vtable";
   CREATE VIRTUAL TABLE vtb USING perl(a INT, b INT, c TEXT,

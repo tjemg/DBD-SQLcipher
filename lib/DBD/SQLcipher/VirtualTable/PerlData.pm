@@ -1,9 +1,9 @@
 #======================================================================
-package DBD::SQLite::VirtualTable::PerlData;
+package DBD::SQLcipher::VirtualTable::PerlData;
 #======================================================================
 use strict;
 use warnings;
-use base 'DBD::SQLite::VirtualTable';
+use base 'DBD::SQLcipher::VirtualTable';
 
 
 # private data for translating comparison operators from Sqlite to Perl
@@ -101,12 +101,12 @@ sub BEST_INDEX {
       # FILTER method (see below); so the eval-ed perl code will be a
       # closure on those values
 
-    # info passed back to the SQLite core -- see vtab.html in sqlite doc
+    # info passed back to the SQLcipher core -- see vtab.html in sqlite doc
     $constraint->{argvIndex} = $ix++;
     $constraint->{omit}      = 1;
   }
 
-  # further info for the SQLite core
+  # further info for the SQLcipher core
   my $outputs = {
     idxNum           => 1,
     idxStr           => (join(" && ", @conditions) || "1"),
@@ -172,11 +172,11 @@ sub UPDATE {
 
 
 #======================================================================
-package DBD::SQLite::VirtualTable::PerlData::Cursor;
+package DBD::SQLcipher::VirtualTable::PerlData::Cursor;
 #======================================================================
 use strict;
 use warnings;
-use base "DBD::SQLite::VirtualTable::Cursor";
+use base "DBD::SQLcipher::VirtualTable::Cursor";
 
 
 sub row {
@@ -240,7 +240,7 @@ sub COLUMN {
 sub ROWID {
   my ($self) = @_;
 
-  return $self->{row_ix} + 1; # rowids start at 1 in SQLite
+  return $self->{row_ix} + 1; # rowids start at 1 in SQLcipher
 }
 
 
@@ -250,13 +250,13 @@ __END__
 
 =head1 NAME
 
-DBD::SQLite::VirtualTable::PerlData -- virtual table hooked to Perl data
+DBD::SQLcipher::VirtualTable::PerlData -- virtual table hooked to Perl data
 
 =head1 SYNOPSIS
 
 Within Perl :
 
-  $dbh->sqlite_create_module(perl => "DBD::SQLite::VirtualTable::PerlData");
+  $dbh->sqlite_create_module(perl => "DBD::SQLcipher::VirtualTable::PerlData");
 
 Then, within SQL :
 
@@ -324,12 +324,12 @@ program should connect to the database and then declare the
 C<PerlData> virtual table module, like this
 
   # connect to the database
-  my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", '', '',
+  my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile", '', '',
                           {RaiseError => 1, AutoCommit => 1});
                           # or any other options suitable to your needs
   
   # register the module
-  $dbh->sqlite_create_module(perl => "DBD::SQLite::VirtualTable::PerlData");
+  $dbh->sqlite_create_module(perl => "DBD::SQLcipher::VirtualTable::PerlData");
 
 Then create a global arrayref variable, using C<our> instead of C<my>,
 so that the variable is stored in the symbol table of the enclosing module.
@@ -346,7 +346,7 @@ variable (here we assume that C<@$rows> contains arrayrefs) :
 
 In most cases, the virtual table will be for temporary use, which is
 the reason why this example prepends C<temp.> in front of the table
-name : this tells SQLite to cleanup that table when the database
+name : this tells SQLcipher to cleanup that table when the database
 handle will be disconnected, without the need to emit an explicit DROP
 statement.
 
@@ -404,7 +404,7 @@ So this can be exploited in a virtual table :
 =head2 Colref example: SELECT WHERE ... IN ...
 
 I<Note: The idea for the following example is borrowed from the
-C<test_intarray.h> file in SQLite's source
+C<test_intarray.h> file in SQLcipher's source
 (L<http://www.sqlite.org/src>).>
 
 A C<colref> virtual table is designed to facilitate using an
@@ -423,7 +423,7 @@ to a virtual table, and then write a statement like this
 Here is how such a program would look like :
 
   # connect to the database
-  my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile", '', '',
+  my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile", '', '',
                           {RaiseError => 1, AutoCommit => 1});
   
   # Declare a global arrayref containing the values. Here we assume
@@ -432,7 +432,7 @@ Here is how such a program would look like :
   our $values = \@ARGV; 
   
   # register the module and declare the virtual table
-  $dbh->sqlite_create_module(perl => "DBD::SQLite::VirtualTable::PerlData");
+  $dbh->sqlite_create_module(perl => "DBD::SQLcipher::VirtualTable::PerlData");
   $dbh->do('CREATE VIRTUAL TABLE temp.intarray'
           .'  USING perl(i INT, colref="main::values');
   

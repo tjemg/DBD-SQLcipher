@@ -8,15 +8,15 @@ BEGIN {
 
 use t::lib::Test qw/connect_ok/;
 use Test::More;
-use DBD::SQLite;
+use DBD::SQLcipher;
 
 BEGIN{
     plan skip_all => 'this test is for Win32 only' unless $^O eq 'MSWin32';
-    plan skip_all => 'this test requires SQLite 3.7.12 and above' unless $DBD::SQLite::sqlite_version_number > 3071100;
+    plan skip_all => 'this test requires SQLcipher 3.7.12 and above' unless $DBD::SQLcipher::sqlite_version_number > 3071100;
 }
 
 use Test::NoWarnings;
-use DBD::SQLite::Constants qw/:extended_result_codes :result_codes/;
+use DBD::SQLcipher::Constants qw/:extended_result_codes :result_codes/;
 use File::Temp;
 
 plan tests => 18;
@@ -46,7 +46,7 @@ for my $flag (0, 1) {
 }
 
 for my $flag (0, 1) {
-    my $dbh = DBI->connect("dbi:SQLite:$tmpdir", '', '', {
+    my $dbh = DBI->connect("dbi:SQLcipher:$tmpdir", '', '', {
         RaiseError => 0,
         PrintError => 0,
         sqlite_extended_result_codes => $flag,

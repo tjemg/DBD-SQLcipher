@@ -10,7 +10,7 @@ use t::lib::Test;
 use Test::More tests => 12;
 use Test::NoWarnings;
 
-my $dbh = DBI->connect('dbi:SQLite:dbname=:memory:',undef,undef,{RaiseError => 1});
+my $dbh = DBI->connect('dbi:SQLcipher:dbname=:memory:',undef,undef,{RaiseError => 1});
 
 # 1. Create a table
 ok( $dbh->do(<<'END_SQL'), 'Created test table' );

@@ -1,4 +1,4 @@
-package DBD::SQLite;
+package DBD::SQLcipher;
 
 use 5.006;
 use strict;
@@ -21,7 +21,7 @@ use constant NEWAPI => ($DBI::VERSION >= 1.608);
 
 # global registry of collation functions, initialized with 2 builtins
 our %COLLATION;
-tie %COLLATION, 'DBD::SQLite::_WriteOnceHash';
+tie %COLLATION, 'DBD::SQLcipher::_WriteOnceHash';
 $COLLATION{perl}       = sub { $_[0] cmp $_[1] };
 $COLLATION{perllocale} = sub { use locale; $_[0] cmp $_[1] };
 
@@ -31,40 +31,40 @@ my $methods_are_installed = 0;
 sub driver {
     return $drh if $drh;
 
-    if (!$methods_are_installed && DBD::SQLite::NEWAPI ) {
-        DBI->setup_driver('DBD::SQLite');
+    if (!$methods_are_installed && DBD::SQLcipher::NEWAPI ) {
+        DBI->setup_driver('DBD::SQLcipher');
 
-        DBD::SQLite::db->install_method('sqlite_last_insert_rowid');
-        DBD::SQLite::db->install_method('sqlite_busy_timeout');
-        DBD::SQLite::db->install_method('sqlite_create_function');
-        DBD::SQLite::db->install_method('sqlite_create_aggregate');
-        DBD::SQLite::db->install_method('sqlite_create_collation');
-        DBD::SQLite::db->install_method('sqlite_collation_needed');
-        DBD::SQLite::db->install_method('sqlite_progress_handler');
-        DBD::SQLite::db->install_method('sqlite_commit_hook');
-        DBD::SQLite::db->install_method('sqlite_rollback_hook');
-        DBD::SQLite::db->install_method('sqlite_update_hook');
-        DBD::SQLite::db->install_method('sqlite_set_authorizer');
-        DBD::SQLite::db->install_method('sqlite_backup_from_file');
-        DBD::SQLite::db->install_method('sqlite_backup_to_file');
-        DBD::SQLite::db->install_method('sqlite_enable_load_extension');
-        DBD::SQLite::db->install_method('sqlite_load_extension');
-        DBD::SQLite::db->install_method('sqlite_register_fts3_perl_tokenizer');
-        DBD::SQLite::db->install_method('sqlite_trace', { O => 0x0004 });
-        DBD::SQLite::db->install_method('sqlite_profile', { O => 0x0004 });
-        DBD::SQLite::db->install_method('sqlite_table_column_metadata', { O => 0x0004 });
-        DBD::SQLite::db->install_method('sqlite_db_filename', { O => 0x0004 });
-        DBD::SQLite::db->install_method('sqlite_db_status', { O => 0x0004 });
-        DBD::SQLite::st->install_method('sqlite_st_status', { O => 0x0004 });
-        DBD::SQLite::db->install_method('sqlite_create_module');
+        DBD::SQLcipher::db->install_method('sqlite_last_insert_rowid');
+        DBD::SQLcipher::db->install_method('sqlite_busy_timeout');
+        DBD::SQLcipher::db->install_method('sqlite_create_function');
+        DBD::SQLcipher::db->install_method('sqlite_create_aggregate');
+        DBD::SQLcipher::db->install_method('sqlite_create_collation');
+        DBD::SQLcipher::db->install_method('sqlite_collation_needed');
+        DBD::SQLcipher::db->install_method('sqlite_progress_handler');
+        DBD::SQLcipher::db->install_method('sqlite_commit_hook');
+        DBD::SQLcipher::db->install_method('sqlite_rollback_hook');
+        DBD::SQLcipher::db->install_method('sqlite_update_hook');
+        DBD::SQLcipher::db->install_method('sqlite_set_authorizer');
+        DBD::SQLcipher::db->install_method('sqlite_backup_from_file');
+        DBD::SQLcipher::db->install_method('sqlite_backup_to_file');
+        DBD::SQLcipher::db->install_method('sqlite_enable_load_extension');
+        DBD::SQLcipher::db->install_method('sqlite_load_extension');
+        DBD::SQLcipher::db->install_method('sqlite_register_fts3_perl_tokenizer');
+        DBD::SQLcipher::db->install_method('sqlite_trace', { O => 0x0004 });
+        DBD::SQLcipher::db->install_method('sqlite_profile', { O => 0x0004 });
+        DBD::SQLcipher::db->install_method('sqlite_table_column_metadata', { O => 0x0004 });
+        DBD::SQLcipher::db->install_method('sqlite_db_filename', { O => 0x0004 });
+        DBD::SQLcipher::db->install_method('sqlite_db_status', { O => 0x0004 });
+        DBD::SQLcipher::st->install_method('sqlite_st_status', { O => 0x0004 });
+        DBD::SQLcipher::db->install_method('sqlite_create_module');
 
         $methods_are_installed++;
     }
 
     $drh = DBI::_new_drh( "$_[0]::dr", {
-        Name        => 'SQLite',
+        Name        => 'SQLcipher',
         Version     => $VERSION,
-        Attribution => 'DBD::SQLite by Matt Sergeant et al',
+        Attribution => 'DBD::SQLcipher by Matt Sergeant et al',
     } );
 
     return $drh;
@@ -76,7 +76,7 @@ sub CLONE {
 
 
 package # hide from PAUSE
-    DBD::SQLite::dr;
+    DBD::SQLcipher::dr;
 
 sub connect {
     my ($drh, $dbname, $user, $auth, $attr) = @_;
@@ -98,7 +98,7 @@ sub connect {
                 $real = $value;
             } elsif ( $key eq 'uri' ) {
                 $real = $value;
-                $attr->{sqlite_open_flags} |= DBD::SQLite::OPEN_URI();
+                $attr->{sqlite_open_flags} |= DBD::SQLcipher::OPEN_URI();
             } else {
                 $attr->{$key} = $value;
             }
@@ -106,8 +106,8 @@ sub connect {
     }
 
     if (my $flags = $attr->{sqlite_open_flags}) {
-        unless ($flags & (DBD::SQLite::OPEN_READONLY() | DBD::SQLite::OPEN_READWRITE())) {
-            $attr->{sqlite_open_flags} |= DBD::SQLite::OPEN_READWRITE() | DBD::SQLite::OPEN_CREATE();
+        unless ($flags & (DBD::SQLcipher::OPEN_READONLY() | DBD::SQLcipher::OPEN_READWRITE())) {
+            $attr->{sqlite_open_flags} |= DBD::SQLcipher::OPEN_READWRITE() | DBD::SQLcipher::OPEN_CREATE();
         }
     }
 
@@ -122,17 +122,17 @@ sub connect {
             require Win32;
             $real = join '', grep { defined } Win32::GetShortPathName($dir), $file, $suffix;
         } else {
-            # SQLite can't do mkpath anyway.
+            # SQLcipher can't do mkpath anyway.
             # So let it go through as it and fail.
         }
     }
 
     # Hand off to the actual login function
-    DBD::SQLite::db::_login($dbh, $real, $user, $auth, $attr) or return undef;
+    DBD::SQLcipher::db::_login($dbh, $real, $user, $auth, $attr) or return undef;
 
     # Register the on-demand collation installer, REGEXP function and
     # perl tokenizer
-    if ( DBD::SQLite::NEWAPI ) {
+    if ( DBD::SQLcipher::NEWAPI ) {
         $dbh->sqlite_collation_needed( \&install_collation );
         $dbh->sqlite_create_function( "REGEXP", 2, \&regexp );
         $dbh->sqlite_register_fts3_perl_tokenizer();
@@ -143,7 +143,7 @@ sub connect {
     }
 
     # HACK: Since PrintWarn = 0 doesn't seem to actually prevent warnings
-    # in DBD::SQLite we set Warn to false if PrintWarn is false.
+    # in DBD::SQLcipher we set Warn to false if PrintWarn is false.
 
     # NOTE: According to the explanation by timbunce,
     # "Warn is meant to report on bad practices or problems with
@@ -166,12 +166,12 @@ sub connect {
 sub install_collation {
     my $dbh       = shift;
     my $name      = shift;
-    my $collation = $DBD::SQLite::COLLATION{$name};
+    my $collation = $DBD::SQLcipher::COLLATION{$name};
     unless ($collation) {
         warn "Can't install unknown collation: $name" if $dbh->{PrintWarn};
         return;
     }
-    if ( DBD::SQLite::NEWAPI ) {
+    if ( DBD::SQLcipher::NEWAPI ) {
         $dbh->sqlite_create_collation( $name => $collation );
     } else {
         $dbh->func( $name => $collation, "create_collation" );
@@ -188,7 +188,7 @@ sub regexp {
 }
 
 package # hide from PAUSE
-    DBD::SQLite::db;
+    DBD::SQLcipher::db;
 
 sub prepare {
     my $dbh = shift;
@@ -199,7 +199,7 @@ sub prepare {
         Statement => $sql,
     } );
 
-    DBD::SQLite::st::_prepare($sth, $sql, @_) or return undef;
+    DBD::SQLcipher::st::_prepare($sth, $sql, @_) or return undef;
 
     return $sth;
 }
@@ -213,7 +213,7 @@ sub do {
         # statements, which is handy but insecure sometimes.
         # Use this only when it's safe or explicitly allowed.
         if (index($statement, ';') == -1 or $dbh->FETCH('sqlite_allow_multiple_statements')) {
-            return DBD::SQLite::db::_do($dbh, $statement);
+            return DBD::SQLcipher::db::_do($dbh, $statement);
         }
     }
 
@@ -237,7 +237,7 @@ sub ping {
     my $dbh = shift;
 
     # $file may be undef (ie. in-memory/temporary database)
-    my $file = DBD::SQLite::NEWAPI ? $dbh->sqlite_db_filename
+    my $file = DBD::SQLcipher::NEWAPI ? $dbh->sqlite_db_filename
                                    : $dbh->func("db_filename");
 
     return 0 if $file && !-f $file;
@@ -245,11 +245,11 @@ sub ping {
 }
 
 sub _get_version {
-    return ( DBD::SQLite::db::FETCH($_[0], 'sqlite_version') );
+    return ( DBD::SQLcipher::db::FETCH($_[0], 'sqlite_version') );
 }
 
 my %info = (
-    17 => 'SQLite',       # SQL_DBMS_NAME
+    17 => 'SQLcipher',       # SQL_DBMS_NAME
     18 => \&_get_version, # SQL_DBMS_VER
     29 => '"',            # SQL_IDENTIFIER_QUOTE_CHAR
 );
@@ -831,7 +831,7 @@ END_SQL
     my $sth_tables = $dbh->prepare($sql) or return undef;
     $sth_tables->execute or return undef;
 
-    # Taken from Fey::Loader::SQLite
+    # Taken from Fey::Loader::SQLcipher
     my @cols;
     while ( my ($schema, $table) = $sth_tables->fetchrow_array ) {
         my $sth_columns = $dbh->prepare(qq{PRAGMA "$schema".table_info("$table")});
@@ -892,11 +892,11 @@ END_SQL
 }
 
 #======================================================================
-# An internal tied hash package used for %DBD::SQLite::COLLATION, to
+# An internal tied hash package used for %DBD::SQLcipher::COLLATION, to
 # prevent people from unintentionally overriding globally registered collations.
 
 package # hide from PAUSE
-    DBD::SQLite::_WriteOnceHash;
+    DBD::SQLcipher::_WriteOnceHash;
 
 require Tie::Hash;
 
@@ -925,25 +925,25 @@ __END__
 
 =head1 NAME
 
-DBD::SQLite - Self-contained RDBMS in a DBI Driver
+DBD::SQLcipher - Self-contained RDBMS in a DBI Driver
 
 =head1 SYNOPSIS
 
   use DBI;
-  my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
+  my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile","","");
 
 =head1 DESCRIPTION
 
-SQLite is a public domain file-based relational database engine that
+SQLcipher is a public domain file-based relational database engine that
 you can find at L<http://www.sqlite.org/>.
 
-B<DBD::SQLite> is a Perl DBI driver for SQLite, that includes
+B<DBD::SQLcipher> is a Perl DBI driver for SQLcipher, that includes
 the entire thing in the distribution.
 So in order to get a fast transaction capable RDBMS working for your
 perl project you simply have to install this module, and B<nothing>
 else.
 
-SQLite supports the following features:
+SQLcipher supports the following features:
 
 =over 4
 
@@ -958,7 +958,7 @@ easier to move things around than with L<DBD::CSV>.
 
 =item Atomic commit and rollback
 
-Yes, B<DBD::SQLite> is small and light, but it supports full transactions!
+Yes, B<DBD::SQLcipher> is small and light, but it supports full transactions!
 
 =item Extensible
 
@@ -967,27 +967,27 @@ SQL parser.
 
 =back
 
-There's lots more to it, so please refer to the docs on the SQLite web
+There's lots more to it, so please refer to the docs on the SQLcipher web
 page, listed above, for SQL details. Also refer to L<DBI> for details
 on how to use DBI itself. The API works like every DBI module does.
 However, currently many statement attributes are not implemented or
-are limited by the typeless nature of the SQLite database.
+are limited by the typeless nature of the SQLcipher database.
 
 =head1 NOTABLE DIFFERENCES FROM OTHER DRIVERS
 
 =head2 Database Name Is A File Name
 
-SQLite creates a file per a database. You should pass the C<path> of
+SQLcipher creates a file per a database. You should pass the C<path> of
 the database file (with or without a parent directory) in the DBI
 connection string (as a database C<name>):
 
-  my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile","","");
+  my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile","","");
 
 The file is opened in read/write mode, and will be created if
 it does not exist yet.
 
 Although the database is stored in a single file, the directory
-containing the database file must be writable by SQLite because the
+containing the database file must be writable by SQLcipher because the
 library will create several temporary files there.
 
 If the filename C<$dbfile> is ":memory:", then a private, temporary
@@ -995,7 +995,7 @@ in-memory database is created for the connection. This in-memory
 database will vanish when the database connection is closed.
 It is handy for your library tests.
 
-Note that future versions of SQLite might make use of additional
+Note that future versions of SQLcipher might make use of additional
 special filenames that begin with the ":" character. It is recommended
 that when a database filename actually does begin with a ":" character
 you should prefix the filename with a pathname such as "./" to avoid
@@ -1008,31 +1008,31 @@ be automatically deleted as soon as the database connection is closed.
 As of 1.41_01, you can pass URI filename (see L<http://www.sqlite.org/uri.html>)
 as well for finer control:
 
-  my $dbh = DBI->connect("dbi:SQLite:uri=file:$path_to_dbfile?mode=rwc");
+  my $dbh = DBI->connect("dbi:SQLcipher:uri=file:$path_to_dbfile?mode=rwc");
 
-Note that this is not for remote SQLite database connection. You only can
+Note that this is not for remote SQLcipher database connection. You only can
 connect to a local database.
 
 You can also set sqlite_open_flags (only) when you connect to a database:
 
-  use DBD::SQLite;
-  my $dbh = DBI->connect("dbi:SQLite:$dbfile", undef, undef, {
-    sqlite_open_flags => DBD::SQLite::OPEN_READONLY,
+  use DBD::SQLcipher;
+  my $dbh = DBI->connect("dbi:SQLcipher:$dbfile", undef, undef, {
+    sqlite_open_flags => DBD::SQLcipher::OPEN_READONLY,
   });
 
 See L<http://www.sqlite.org/c3ref/open.html> for details.
 
-=head2 DBD::SQLite And File::Temp
+=head2 DBD::SQLcipher And File::Temp
 
 When you use L<File::Temp> to create a temporary file/directory for
-SQLite databases, you need to remember:
+SQLcipher databases, you need to remember:
 
 =over 4
 
 =item tempfile may be locked exclusively
 
 You may want to use C<tempfile()> to create a temporary database
-filename for DBD::SQLite, but as noted in L<File::Temp>'s POD,
+filename for DBD::SQLcipher, but as noted in L<File::Temp>'s POD,
 this file may have an exclusive lock under some operating systems
 (notably Mac OSX), and result in a "database is locked" error.
 To avoid this, set EXLOCK option to false when you call tempfile().
@@ -1054,13 +1054,13 @@ If you don't need to keep or share a temporary database,
 use ":memory:" database instead. It's much handier and cleaner
 for ordinary testing.
 
-=head2 DBD::SQLite and fork()
+=head2 DBD::SQLcipher and fork()
 
-Follow the advice in the SQLite FAQ (L<https://sqlite.org/faq.html>).
+Follow the advice in the SQLcipher FAQ (L<https://sqlite.org/faq.html>).
 
 =over 4
 
-Under Unix, you should not carry an open SQLite database across
+Under Unix, you should not carry an open SQLcipher database across
 a fork() system call into the child process. Problems will result
 if you do.
 
@@ -1075,7 +1075,7 @@ You might also want to tweak C<sqlite_busy_timeout> and
 C<sqlite_use_immediate_transaction> (see below), depending
 on your needs.
 
-If you need a higher level of concurrency than SQLite supports,
+If you need a higher level of concurrency than SQLcipher supports,
 consider using other client/server database engines.
 
 =head2 Accessing A Database With Other Tools
@@ -1083,24 +1083,24 @@ consider using other client/server database engines.
 To access the database from the command line, try using C<dbish>
 which comes with the L<DBI::Shell> module. Just type:
 
-  dbish dbi:SQLite:foo.db
+  dbish dbi:SQLcipher:foo.db
 
 On the command line to access the file F<foo.db>.
 
-Alternatively you can install SQLite from the link above without
-conflicting with B<DBD::SQLite> and use the supplied C<sqlite3>
+Alternatively you can install SQLcipher from the link above without
+conflicting with B<DBD::SQLcipher> and use the supplied C<sqlite3>
 command line tool.
 
 =head2 Blobs
 
-As of version 1.11, blobs should "just work" in SQLite as text columns.
+As of version 1.11, blobs should "just work" in SQLcipher as text columns.
 However this will cause the data to be treated as a string, so SQL
 statements such as length(x) will return the length of the column as a NUL
 terminated string, rather than the size of the blob in bytes. In order to
 store natively as a BLOB use the following code:
 
   use DBI qw(:sql_types);
-  my $dbh = DBI->connect("dbi:SQLite:dbfile","","");
+  my $dbh = DBI->connect("dbi:SQLcipher:dbfile","","");
   
   my $blob = `cat foo.jpg`;
   my $sth = $dbh->prepare("INSERT INTO mytable VALUES (1, ?)");
@@ -1126,7 +1126,7 @@ with a numeric bind value like this doesn't work as you might expect.
   });
   $sth->execute(5);
 
-This is because DBD::SQLite assumes that all the bind values are text
+This is because DBD::SQLcipher assumes that all the bind values are text
 (and should be quoted) by default. Thus the above statement becomes
 like this while executing:
 
@@ -1161,7 +1161,7 @@ This is somewhat weird, but works anyway.
 =item Set C<sqlite_see_if_its_a_number> database handle attribute
 
 As of version 1.32_02, you can use C<sqlite_see_if_its_a_number>
-to let DBD::SQLite to see if the bind values are numbers or not.
+to let DBD::SQLcipher to see if the bind values are numbers or not.
 
   $dbh->{sqlite_see_if_its_a_number} = 1;
   my $sth = $dbh->prepare(q{
@@ -1171,14 +1171,14 @@ to let DBD::SQLite to see if the bind values are numbers or not.
 
 You can set it to true when you connect to a database.
 
-  my $dbh = DBI->connect('dbi:SQLite:foo', undef, undef, {
+  my $dbh = DBI->connect('dbi:SQLcipher:foo', undef, undef, {
     AutoCommit => 1,
     RaiseError => 1,
     sqlite_see_if_its_a_number => 1,
   });
 
 This is the most straightforward solution, but as noted above,
-existing data in your databases created by DBD::SQLite have not
+existing data in your databases created by DBD::SQLcipher have not
 always been stored as numbers, so this *might* cause other obscure
 problems. Use this sparingly when you handle existing databases.
 If you handle databases created by other tools like native C<sqlite3>
@@ -1187,7 +1187,7 @@ command line tool, this attribute would help you.
 As of 1.41_04, C<sqlite_see_if_its_a_number> works only for
 bind values with no explicit type.
 
-  my $dbh = DBI->connect('dbi:SQLite:foo', undef, undef, {
+  my $dbh = DBI->connect('dbi:SQLcipher:foo', undef, undef, {
     AutoCommit => 1,
     RaiseError => 1,
     sqlite_see_if_its_a_number => 1,
@@ -1202,8 +1202,8 @@ bind values with no explicit type.
 
 =head2 Placeholders
 
-SQLite supports several placeholder expressions, including C<?>
-and C<:AAAA>. Consult the L<DBI> and SQLite documentation for
+SQLcipher supports several placeholder expressions, including C<?>
+and C<:AAAA>. Consult the L<DBI> and SQLcipher documentation for
 details. 
 
 L<http://www.sqlite.org/lang_expr.html#varparam>
@@ -1221,9 +1221,9 @@ named) placeholders to avoid confusion.
 
 B<BE PREPARED! WOLVES APPROACH!!>
 
-SQLite has started supporting foreign key constraints since 3.6.19
-(released on Oct 14, 2009; bundled in DBD::SQLite 1.26_05).
-To be exact, SQLite has long been able to parse a schema with foreign
+SQLcipher has started supporting foreign key constraints since 3.6.19
+(released on Oct 14, 2009; bundled in DBD::SQLcipher 1.26_05).
+To be exact, SQLcipher has long been able to parse a schema with foreign
 keys, but the constraints has not been enforced. Now you can issue
 a pragma actually to enable this feature and enforce the constraints.
 
@@ -1238,13 +1238,13 @@ turning the pragma off:
   $dbh->do("PRAGMA foreign_keys = OFF");
 
 As of this writing, this feature is disabled by default by the
-SQLite team, and by us, to secure backward compatibility, as
+SQLcipher team, and by us, to secure backward compatibility, as
 this feature may break your applications, and actually broke
 some for us. If you have used a schema with foreign key constraints
 but haven't cared them much and supposed they're always ignored for
-SQLite, be prepared, and B<please do extensive testing to ensure
+SQLcipher, be prepared, and B<please do extensive testing to ensure
 that your applications will continue to work when the foreign keys
-support is enabled by default>. It is very likely that the SQLite
+support is enabled by default>. It is very likely that the SQLcipher
 team will turn it default-on in the future, and we plan to do it
 NO LATER THAN they do so.
 
@@ -1252,8 +1252,8 @@ See L<http://www.sqlite.org/foreignkeys.html> for details.
 
 =head2 Pragma
 
-SQLite has a set of "Pragma"s to modify its operation or to query
-for its internal data. These are specific to SQLite and are not
+SQLcipher has a set of "Pragma"s to modify its operation or to query
+for its internal data. These are specific to SQLcipher and are not
 likely to work with other DBD libraries, but you may find some of
 these are quite useful, including:
 
@@ -1261,16 +1261,16 @@ these are quite useful, including:
 
 =item journal_mode
 
-You can use this pragma to change the journal mode for SQLite
+You can use this pragma to change the journal mode for SQLcipher
 databases, maybe for better performance, or for compatibility.
 
-Its default mode is C<DELETE>, which means SQLite uses a rollback
+Its default mode is C<DELETE>, which means SQLcipher uses a rollback
 journal to implement transactions, and the journal is deleted
 at the conclusion of each transaction. If you use C<TRUNCATE>
 instead of C<DELETE>, the journal will be truncated, which is
 usually much faster.
 
-A C<WAL> (write-ahead log) mode is introduced as of SQLite 3.7.0.
+A C<WAL> (write-ahead log) mode is introduced as of SQLcipher 3.7.0.
 This mode is persistent, and it stays in effect even after
 closing and reopening the database. In other words, once the C<WAL>
 mode is set in an application or in a test script, the database
@@ -1284,8 +1284,8 @@ C<sqlite3>.
 
 =item legacy_file_format
 
-If you happen to need to create a SQLite database that will also
-be accessed by a very old SQLite client (prior to 3.3.0 released
+If you happen to need to create a SQLcipher database that will also
+be accessed by a very old SQLcipher client (prior to 3.3.0 released
 in Jan. 2006), you need to set this pragma to ON before you create
 a database.
 
@@ -1296,7 +1296,7 @@ SELECT statements without an ORDER BY clause so that you can see
 if applications are making invalid assumptions about the result
 order.
 
-Note that SQLite 3.7.15 (bundled with DBD::SQLite 1.38_02) enhanced
+Note that SQLcipher 3.7.15 (bundled with DBD::SQLcipher 1.38_02) enhanced
 its query optimizer and the order of results of a SELECT statement
 without an ORDER BY clause may be different from the one of the
 previous versions.
@@ -1304,7 +1304,7 @@ previous versions.
 =item synchronous
 
 You can set set this pragma to OFF to make some of the operations
-in SQLite faster with a possible risk of database corruption
+in SQLcipher faster with a possible risk of database corruption
 in the worst case. See also L</"Performance"> section below.
 
 =back
@@ -1313,7 +1313,7 @@ See L<http://www.sqlite.org/pragma.html> for more details.
 
 =head2 Transactions
 
-DBI/DBD::SQLite's transactions may be a bit confusing. They behave
+DBI/DBD::SQLcipher's transactions may be a bit confusing. They behave
 differently according to the status of the C<AutoCommit> flag:
 
 =over 4
@@ -1362,17 +1362,17 @@ automatically begins if you execute another statement.
 =back
 
 This C<AutoCommit> mode is independent from the autocommit mode
-of the internal SQLite library, which always begins by a C<BEGIN>
+of the internal SQLcipher library, which always begins by a C<BEGIN>
 statement, and ends by a C<COMMIT> or a <ROLLBACK>.
 
 =head2 Transaction and Database Locking
 
-The default transaction behavior of SQLite is C<deferred>, that
+The default transaction behavior of SQLcipher is C<deferred>, that
 means, locks are not acquired until the first read or write
 operation, and thus it is possible that another thread or process
 could create a separate transaction and write to the database after
 the C<BEGIN> on the current thread has executed, and eventually
-cause a "deadlock". To avoid this, DBD::SQLite internally issues
+cause a "deadlock". To avoid this, DBD::SQLcipher internally issues
 a C<BEGIN IMMEDIATE> if you begin a transaction by calling
 C<begin_work> or by turning off C<AutoCommit> (since 1.38_01).
 
@@ -1380,7 +1380,7 @@ If you really need to turn off this feature for some reasons,
 set C<sqlite_use_immediate_transaction> database handle attribute
 to false, and the default C<deferred> transaction will be used.
 
-  my $dbh = DBI->connect("dbi:SQLite::memory:", "", "", {
+  my $dbh = DBI->connect("dbi:SQLcipher::memory:", "", "", {
     sqlite_use_immediate_transaction => 0,
   });
 
@@ -1397,7 +1397,7 @@ However, there are several exceptions to this rule, and rolling-back
 of an unfinished C<SELECT> statement is one of such exceptional
 cases. 
 
-SQLite prohibits C<ROLLBACK> of unfinished C<SELECT> statements in
+SQLcipher prohibits C<ROLLBACK> of unfinished C<SELECT> statements in
 a transaction (See L<http://sqlite.org/lang_transaction.html> for
 details). So you need to call C<finish> before you issue a rollback.
 
@@ -1411,7 +1411,7 @@ details). So you need to call C<finish> before you issue a rollback.
       ...
   };
   if($@) {
-     $sth->finish;  # You need this for SQLite
+     $sth->finish;  # You need this for SQLcipher
      $dbh->rollback;
   } else {
      $dbh->commit;
@@ -1422,7 +1422,7 @@ details). So you need to call C<finish> before you issue a rollback.
 L<DBI>'s statement handle is not supposed to process multiple
 statements at a time. So if you pass a string that contains multiple
 statements (a C<dump>) to a statement handle (via C<prepare> or C<do>),
-L<DBD::SQLite> only processes the first statement, and discards the
+L<DBD::SQLcipher> only processes the first statement, and discards the
 rest.
 
 Since 1.30_01, you can retrieve those ignored (unprepared) statements
@@ -1437,7 +1437,7 @@ it repeats the process again, to the end.
 
 =head2 Performance
 
-SQLite is fast, very fast. Matt processed his 72MB log file with it,
+SQLcipher is fast, very fast. Matt processed his 72MB log file with it,
 inserting the data (400,000+ rows) by using transactions and only
 committing every 1000 rows (otherwise the insertion is quite slow),
 and then performing queries on the data.
@@ -1462,11 +1462,11 @@ are using linux. Also you might want to set:
 
   PRAGMA synchronous = OFF
 
-Which will prevent SQLite from doing fsync's when writing (which
+Which will prevent SQLcipher from doing fsync's when writing (which
 slows down non-transactional writes significantly) at the expense
 of some peace of mind. Also try playing with the cache_size pragma.
 
-The memory usage of SQLite can also be tuned using the cache_size
+The memory usage of SQLcipher can also be tuned using the cache_size
 pragma.
 
   $dbh->do("PRAGMA cache_size = 800000");
@@ -1482,17 +1482,17 @@ Your sweet spot probably lies somewhere in between.
 
 =item sqlite_version
 
-Returns the version of the SQLite library which B<DBD::SQLite> is using,
+Returns the version of the SQLcipher library which B<DBD::SQLcipher> is using,
 e.g., "2.8.0". Can only be read.
 
 =item sqlite_unicode
 
-If set to a true value, B<DBD::SQLite> will turn the UTF-8 flag on for all
+If set to a true value, B<DBD::SQLcipher> will turn the UTF-8 flag on for all
 text strings coming out of the database (this feature is currently disabled
 for perl < 5.8.5). For more details on the UTF-8 flag see
 L<perlunicode>. The default is for the UTF-8 flag to be turned off.
 
-Also note that due to some bizarreness in SQLite's type system (see
+Also note that due to some bizarreness in SQLcipher's type system (see
 L<http://www.sqlite.org/datatype3.html>), if you want to retain
 blob-style behavior for B<some> columns under C<< $dbh->{sqlite_unicode} = 1
 >> (say, to store images in the database), you have to state so
@@ -1520,7 +1520,7 @@ penalty. See above for details.
 
 =item sqlite_use_immediate_transaction
 
-If you set this to true, DBD::SQLite tries to issue a C<begin
+If you set this to true, DBD::SQLcipher tries to issue a C<begin
 immediate transaction> (instead of C<begin transaction>) when
 necessary. See above for details.
 
@@ -1530,7 +1530,7 @@ set this to false explicitly.
 
 =item sqlite_see_if_its_a_number
 
-If you set this to true, DBD::SQLite tries to see if the bind values
+If you set this to true, DBD::SQLcipher tries to see if the bind values
 are number or not, and does not quote if they are numbers. See above
 for details.
 
@@ -1566,7 +1566,7 @@ Note that a statement handle is returned, and not a direct list of tables.
 
 The following fields are returned:
 
-B<TABLE_CAT>: Always NULL, as SQLite does not have the concept of catalogs.
+B<TABLE_CAT>: Always NULL, as SQLcipher does not have the concept of catalogs.
 
 B<TABLE_SCHEM>: The name of the schema (database) that the table or view is
 in. The default schema is 'main', temporary tables are in 'temp' and other
@@ -1583,7 +1583,7 @@ B<TABLE_TYPE>: The type of object returned. Will be one of 'TABLE', 'VIEW',
   $sth   = $dbh->primary_key_info(undef, $schema, $table, \%attr);
 
 You can retrieve primary key names or more detailed information.
-As noted above, SQLite does not have the concept of catalogs, so the
+As noted above, SQLcipher does not have the concept of catalogs, so the
 first argument of the methods is usually C<undef>, and you'll usually
 set C<undef> for the second one (unless you want to know the primary
 keys of temporary tables).
@@ -1642,14 +1642,14 @@ The referential action for the DELETE rule.
 The codes are the same as for UPDATE_RULE.
 
 Unfortunately, the B<DEFERRABILITY> field is always C<undef>;
-as a matter of fact, deferrability clauses are supported by SQLite,
+as a matter of fact, deferrability clauses are supported by SQLcipher,
 but they can't be reported because the C<PRAGMA foreign_key_list>
 tells nothing about them.
 
 B<UNIQUE_OR_PRIMARY>:
 Whether the column is primary or unique.
 
-B<Note>: foreign key support in SQLite must be explicitly turned on through
+B<Note>: foreign key support in SQLcipher must be explicitly turned on through
 a C<PRAGMA> command; see L</"Foreign keys"> earlier in this manual.
 
 =head2 statistics_info
@@ -1685,7 +1685,7 @@ B<INDEX_NAME>:
 The name of the index
 
 B<TYPE>:
-SQLite uses 'btree' for all it's indexes
+SQLcipher uses 'btree' for all it's indexes
 
 B<ORDINAL_POSITION>:
 Column sequence number (starting with 1).
@@ -1719,7 +1719,7 @@ method (to avoid conflict with DBI's trace() method).
 
 This method returns the last inserted rowid. If you specify an INTEGER PRIMARY
 KEY as the first column in your table, that is the column that is returned.
-Otherwise, it is the hidden ROWID column. See the SQLite docs for details.
+Otherwise, it is the hidden ROWID column. See the SQLcipher docs for details.
 
 Generally you should not be using this method. Use the L<DBI> last_insert_id
 method instead. The usage of this is:
@@ -1764,7 +1764,7 @@ This should be a reference to the function's implementation.
 
 =item $flags
 
-You can optionally pass an extra flag bit to create_function, which then would be ORed with SQLITE_UTF8 (default). As of 1.47_02 (SQLite 3.8.9), only meaning bit is SQLITE_DETERMINISTIC (introduced at SQLite 3.8.3), which can make the function perform better. See C API documentation at L<http://sqlite.org/c3ref/create_function.html> for details.
+You can optionally pass an extra flag bit to create_function, which then would be ORed with SQLITE_UTF8 (default). As of 1.47_02 (SQLcipher 3.8.9), only meaning bit is SQLITE_DETERMINISTIC (introduced at SQLcipher 3.8.3), which can make the function perform better. See C API documentation at L<http://sqlite.org/c3ref/create_function.html> for details.
 
 =back
 
@@ -1779,8 +1779,8 @@ After this, it could be used from SQL as:
 
 =head3 REGEXP function
 
-SQLite includes syntactic support for an infix operator 'REGEXP', but
-without any implementation. The C<DBD::SQLite> driver
+SQLcipher includes syntactic support for an infix operator 'REGEXP', but
+without any implementation. The C<DBD::SQLcipher> driver
 automatically registers an implementation that performs standard
 perl regular expression matching, using current locale. So for example
 you can search for words starting with an 'A' with a query like
@@ -1794,7 +1794,7 @@ If you want case-insensitive searching, use perl regex flags, like this :
 The default REGEXP implementation can be overridden through the
 C<create_function> API described above.
 
-Note that regexp matching will B<not> use SQLite indices, but will iterate
+Note that regexp matching will B<not> use SQLcipher indices, but will iterate
 over all rows, so it could be quite costly in terms of performance.
 
 =head2 $dbh->sqlite_create_collation( $name, $code_ref )
@@ -1829,9 +1829,9 @@ from an SQL statement. The callback is invoked as
 and should register the desired collation using
 L</"sqlite_create_collation">.
 
-An initial callback is already registered by C<DBD::SQLite>,
+An initial callback is already registered by C<DBD::SQLcipher>,
 so for most common cases it will be simpler to just
-add your collation sequences in the C<%DBD::SQLite::COLLATION>
+add your collation sequences in the C<%DBD::SQLcipher::COLLATION>
 hash (see section L</"COLLATION FUNCTIONS"> below).
 
 =head2 $dbh->sqlite_create_aggregate( $name, $argc, $pkg, $flags )
@@ -1858,7 +1858,7 @@ This is the package which implements the aggregator interface.
 
 =item $flags
 
-You can optionally pass an extra flag bit to create_aggregate, which then would be ORed with SQLITE_UTF8 (default). As of 1.47_02 (SQLite 3.8.9), only meaning bit is SQLITE_DETERMINISTIC (introduced at SQLite 3.8.3), which can make the function perform better. See C API documentation at L<http://sqlite.org/c3ref/create_function.html> for details.
+You can optionally pass an extra flag bit to create_aggregate, which then would be ORed with SQLITE_UTF8 (default). As of 1.47_02 (SQLcipher 3.8.9), only meaning bit is SQLITE_DETERMINISTIC (introduced at SQLcipher 3.8.3), which can make the function perform better. See C API documentation at L<http://sqlite.org/c3ref/create_function.html> for details.
 
 =back
 
@@ -1930,12 +1930,12 @@ The aggregate function can then be used as:
   FROM results
   GROUP BY group_name;
 
-For more examples, see the L<DBD::SQLite::Cookbook>.
+For more examples, see the L<DBD::SQLcipher::Cookbook>.
 
 =head2 $dbh->sqlite_progress_handler( $n_opcodes, $code_ref )
 
 This method registers a handler to be invoked periodically during long
-running calls to SQLite.
+running calls to SQLcipher.
 
 An example use for this interface is to keep a GUI updated during a
 large query. The parameters are:
@@ -1945,12 +1945,12 @@ large query. The parameters are:
 =item $n_opcodes
 
 The progress handler is invoked once for every C<$n_opcodes>
-virtual machine opcodes in SQLite.
+virtual machine opcodes in SQLcipher.
 
 =item $code_ref
 
 Reference to the handler subroutine.  If the progress handler returns
-non-zero, the SQLite operation is interrupted. This feature can be used to
+non-zero, the SQLcipher operation is interrupted. This feature can be used to
 implement a "Cancel" button on a GUI dialog box.
 
 Set this argument to C<undef> if you want to unregister a previous
@@ -1998,8 +1998,8 @@ where
 
 =item $action_code
 
-is an integer equal to either C<DBD::SQLite::INSERT>,
-C<DBD::SQLite::DELETE> or C<DBD::SQLite::UPDATE>
+is an integer equal to either C<DBD::SQLcipher::INSERT>,
+C<DBD::SQLcipher::DELETE> or C<DBD::SQLcipher::UPDATE>
 (see L</"Action Codes">);
 
 =item $database
@@ -2021,10 +2021,10 @@ that table.
 
 This method registers an authorizer callback to be invoked whenever
 SQL statements are being compiled by the L<DBI/prepare> method.  The
-authorizer callback should return C<DBD::SQLite::OK> to allow the
-action, C<DBD::SQLite::IGNORE> to disallow the specific action but
+authorizer callback should return C<DBD::SQLcipher::OK> to allow the
+action, C<DBD::SQLcipher::IGNORE> to disallow the specific action but
 allow the SQL statement to continue to be compiled, or
-C<DBD::SQLite::DENY> to cause the entire SQL statement to be rejected
+C<DBD::SQLcipher::DENY> to cause the entire SQL statement to be rejected
 with an error. If the authorizer callback returns any other value,
 then C<prepare> call that triggered the authorizer will fail with
 an error message.
@@ -2071,20 +2071,20 @@ top-level SQL code.
 
 =head2 $dbh->sqlite_backup_from_file( $filename )
 
-This method accesses the SQLite Online Backup API, and will take a backup of
+This method accesses the SQLcipher Online Backup API, and will take a backup of
 the named database file, copying it to, and overwriting, your current database
 connection. This can be particularly handy if your current connection is to the
 special :memory: database, and you wish to populate it from an existing DB.
 
 =head2 $dbh->sqlite_backup_to_file( $filename )
 
-This method accesses the SQLite Online Backup API, and will take a backup of
+This method accesses the SQLcipher Online Backup API, and will take a backup of
 the currently connected database, and write it out to the named file.
 
 =head2 $dbh->sqlite_enable_load_extension( $bool )
 
 Calling this method with a true value enables loading (external)
-SQLite3 extensions. After the call, you can load extensions like this:
+SQLcipher3 extensions. After the call, you can load extensions like this:
 
   $dbh->sqlite_enable_load_extension(1);
   $sth = $dbh->prepare("select load_extension('libsqlitefunctions.so')")
@@ -2092,7 +2092,7 @@ SQLite3 extensions. After the call, you can load extensions like this:
 
 =head2 $dbh->sqlite_load_extension( $file, $proc )
 
-Loading an extension by a select statement (with the "load_extension" SQLite3 function like above) has some limitations. If you need to, say, create other functions from an extension, use this method. $file (a path to the extension) is mandatory, and $proc (an entry point name) is optional. You need to call C<sqlite_enable_load_extension> before calling C<sqlite_load_extension>.
+Loading an extension by a select statement (with the "load_extension" SQLcipher3 function like above) has some limitations. If you need to, say, create other functions from an extension, use this method. $file (a path to the extension) is mandatory, and $proc (an entry point name) is optional. You need to call C<sqlite_enable_load_extension> before calling C<sqlite_load_extension>.
 
 =head2 $dbh->sqlite_trace( $code_ref )
 
@@ -2143,7 +2143,7 @@ is an estimate of wall-clock time of how long that statement took to run (in mil
 
 =back
 
-This method is considered experimental and is subject to change in future versions of SQLite.
+This method is considered experimental and is subject to change in future versions of SQLcipher.
 
 See also L<DBI::Profile> for better profiling options.
 
@@ -2151,17 +2151,17 @@ See also L<DBI::Profile> for better profiling options.
 
 is for internal use only.
 
-=head2 DBD::SQLite::compile_options()
+=head2 DBD::SQLcipher::compile_options()
 
-Returns an array of compile options (available since SQLite 3.6.23,
-bundled in DBD::SQLite 1.30_01), or an empty array if the bundled
+Returns an array of compile options (available since SQLcipher 3.6.23,
+bundled in DBD::SQLcipher 1.30_01), or an empty array if the bundled
 library is old or compiled with SQLITE_OMIT_COMPILEOPTION_DIAGS.
 
-=head2 DBD::SQLite::sqlite_status()
+=head2 DBD::SQLcipher::sqlite_status()
 
-Returns a hash reference that holds a set of status information of SQLite runtime such as memory usage or page cache usage (see L<http://www.sqlite.org/c3ref/c_status_malloc_count.html> for details). Each of the entry contains the current value and the highwater value.
+Returns a hash reference that holds a set of status information of SQLcipher runtime such as memory usage or page cache usage (see L<http://www.sqlite.org/c3ref/c_status_malloc_count.html> for details). Each of the entry contains the current value and the highwater value.
 
-  my $status = DBD::SQLite::sqlite_status();
+  my $status = DBD::SQLcipher::sqlite_status();
   my $cur  = $status->{memory_used}{current};
   my $high = $status->{memory_used}{highwater};
 
@@ -2173,7 +2173,7 @@ Returns a hash reference that holds a set of status information of database conn
 
 =head2 $sth->sqlite_st_status()
 
-Returns a hash reference that holds a set of status information of SQLite statement handle such as full table scan count. See L<http://www.sqlite.org/c3ref/c_stmtstatus_counter.html> for details. Statement status only holds the current value.
+Returns a hash reference that holds a set of status information of SQLcipher statement handle such as full table scan count. See L<http://www.sqlite.org/c3ref/c_stmtstatus_counter.html> for details. Statement status only holds the current value.
 
   my $status = $sth->sqlite_st_status();
   my $cur = $status->{fullscan_step};
@@ -2185,25 +2185,25 @@ You may also pass 0 as an argument to reset the status.
 Registers a name for a I<virtual table module>. Module names must be
 registered before creating a new virtual table using the module and
 before using a preexisting virtual table for the module.
-Virtual tables are explained in L<DBD::SQLite::VirtualTable>.
+Virtual tables are explained in L<DBD::SQLcipher::VirtualTable>.
 
 =head1 DRIVER CONSTANTS
 
-A subset of SQLite C constants are made available to Perl,
+A subset of SQLcipher C constants are made available to Perl,
 because they may be needed when writing
 hooks or authorizer callbacks. For accessing such constants,
-the C<DBD::SQLite> module must be explicitly C<use>d at compile
+the C<DBD::SQLcipher> module must be explicitly C<use>d at compile
 time. For example, an authorizer that forbids any
 DELETE operation would be written as follows :
 
-  use DBD::SQLite;
+  use DBD::SQLcipher;
   $dbh->sqlite_set_authorizer(sub {
     my $action_code = shift;
-    return $action_code == DBD::SQLite::DELETE ? DBD::SQLite::DENY
-                                               : DBD::SQLite::OK;
+    return $action_code == DBD::SQLcipher::DELETE ? DBD::SQLcipher::DENY
+                                               : DBD::SQLcipher::OK;
   });
 
-The list of constants implemented in C<DBD::SQLite> is given
+The list of constants implemented in C<DBD::SQLcipher> is given
 below; more information can be found ad
 at L<http://www.sqlite.org/c3ref/constlist.html>.
 
@@ -2262,7 +2262,7 @@ associated strings.
 
 =head2 Definition
 
-SQLite v3 provides the ability for users to supply arbitrary
+SQLcipher v3 provides the ability for users to supply arbitrary
 comparison functions, known as user-defined "collation sequences" or
 "collating functions", to be used for comparing two text values.
 L<http://www.sqlite.org/datatype3.html#collation>
@@ -2270,7 +2270,7 @@ explains how collations are used in various SQL expressions.
 
 =head2 Builtin collation sequences
 
-The following collation sequences are builtin within SQLite :
+The following collation sequences are builtin within SQLcipher :
 
 =over
 
@@ -2282,7 +2282,7 @@ Compares string data using memcmp(), regardless of text encoding.
 
 The same as binary, except the 26 upper case characters of ASCII are
 folded to their lower case equivalents before the comparison is
-performed. Note that only ASCII characters are case folded. SQLite
+performed. Note that only ASCII characters are case folded. SQLcipher
 does not attempt to do full UTF case folding due to the size of the
 tables required.
 
@@ -2292,7 +2292,7 @@ The same as binary, except that trailing space characters are ignored.
 
 =back
 
-In addition, C<DBD::SQLite> automatically installs the
+In addition, C<DBD::SQLcipher> automatically installs the
 following collation sequences :
 
 =over
@@ -2331,7 +2331,7 @@ a perl collation sequence . The recommended way to activate unicode
 is to set the parameter at connection time :
 
   my $dbh = DBI->connect(
-      "dbi:SQLite:dbname=foo", "", "",
+      "dbi:SQLcipher:dbname=foo", "", "",
       {
           RaiseError     => 1,
           sqlite_unicode => 1,
@@ -2340,27 +2340,27 @@ is to set the parameter at connection time :
 
 =head2 Adding user-defined collations
 
-The native SQLite API for adding user-defined collations is
+The native SQLcipher API for adding user-defined collations is
 exposed through methods L</"sqlite_create_collation"> and
 L</"sqlite_collation_needed">.
 
 To avoid calling these functions every time a C<$dbh> handle is
-created, C<DBD::SQLite> offers a simpler interface through the
-C<%DBD::SQLite::COLLATION> hash : just insert your own
+created, C<DBD::SQLcipher> offers a simpler interface through the
+C<%DBD::SQLcipher::COLLATION> hash : just insert your own
 collation functions in that hash, and whenever an unknown
 collation name is encountered in SQL, the appropriate collation
 function will be loaded on demand from the hash. For example,
 here is a way to sort text values regardless of their accented
 characters :
 
-  use DBD::SQLite;
-  $DBD::SQLite::COLLATION{no_accents} = sub {
+  use DBD::SQLcipher;
+  $DBD::SQLcipher::COLLATION{no_accents} = sub {
     my ( $a, $b ) = map lc, @_;
     tr[àâáäåãçðèêéëìîíïñòôóöõøùûúüý]
       [aaaaaacdeeeeiiiinoooooouuuuy] for $a, $b;
     $a cmp $b;
   };
-  my $dbh  = DBI->connect("dbi:SQLite:dbname=dbfile");
+  my $dbh  = DBI->connect("dbi:SQLcipher:dbname=dbfile");
   my $sql  = "SELECT ... FROM ... ORDER BY ... COLLATE no_accents");
   my $rows = $dbh->selectall_arrayref($sql);
 
@@ -2375,7 +2375,7 @@ exception if any attempt is made to override or delete a existing
 entry (including the builtin C<perl> and C<perllocale>).
 
 If you really, really need to change or delete an entry, you can
-always grab the tied object underneath C<%DBD::SQLite::COLLATION> ---
+always grab the tied object underneath C<%DBD::SQLcipher::COLLATION> ---
 but don't do that unless you really know what you are doing. Also
 observe that changes in the global hash will not modify existing
 collations in existing database handles: it will only affect new
@@ -2385,18 +2385,18 @@ need to call the L</create_collation> method directly.
 
 =head1 FULLTEXT SEARCH
 
-SQLite is bundled with an extension module for full-text
+SQLcipher is bundled with an extension module for full-text
 indexing. Tables with this feature enabled can be efficiently queried
 to find rows that contain one or more instances of some specified
 words, in any column, even if the table contains many large documents.
 
 Explanations for using this feature are provided in a separate document:
-see L<DBD::SQLite::Fulltext_search>.
+see L<DBD::SQLcipher::Fulltext_search>.
 
 
 =head1 R* TREE SUPPORT
 
-The RTREE extension module within SQLite adds support for creating
+The RTREE extension module within SQLcipher adds support for creating
 a R-Tree, a special index for range and multidimensional queries.  This
 allows users to create tables that can be loaded with (as an example)
 geospatial data such as latitude/longitude coordinates for buildings within
@@ -2428,20 +2428,20 @@ then query which buildings overlap or are contained within a specified region:
   my $overlapping = $dbh->selectcol_arrayref($overlap_sql,undef,
                         $minLong, $maxLong, $minLat, $maxLat);  
 
-For more detail, please see the SQLite R-Tree page
+For more detail, please see the SQLcipher R-Tree page
 (L<http://www.sqlite.org/rtree.html>). Note that custom R-Tree
 queries using callbacks, as mentioned in the prior link, have not been
 implemented yet.
 
 =head1 VIRTUAL TABLES IMPLEMENTED IN PERL
 
-SQLite has a concept of "virtual tables" which look like regular
+SQLcipher has a concept of "virtual tables" which look like regular
 tables but are implemented internally through specific functions.
 The fulltext or R* tree features described in the previous chapters
 are examples of such virtual tables, implemented in C code.
 
-C<DBD::SQLite> also supports virtual tables implemented in I<Perl code>:
-see L<DBD::SQLite::VirtualTable> for using or implementing such
+C<DBD::SQLcipher> also supports virtual tables implemented in I<Perl code>:
+see L<DBD::SQLcipher::VirtualTable> for using or implementing such
 virtual tables. These can have many interesting uses
 for joining regular DBMS data with some other kind of data within your
 Perl programs. Bundled with the present distribution are :
@@ -2450,13 +2450,13 @@ Perl programs. Bundled with the present distribution are :
 
 =item *
 
-L<DBD::SQLite::VirtualTable::FileContent> : implements a virtual
+L<DBD::SQLcipher::VirtualTable::FileContent> : implements a virtual
 column that exposes file contents. This is especially useful
-in conjunction with a fulltext index; see L<DBD::SQLite::Fulltext_search>.
+in conjunction with a fulltext index; see L<DBD::SQLcipher::Fulltext_search>.
 
 =item *
 
-L<DBD::SQLite::VirtualTable::PerlData> : binds to a Perl array
+L<DBD::SQLcipher::VirtualTable::PerlData> : binds to a Perl array
 within the Perl program. This can be used for simple import/export
 operations, for debugging purposes, for joining data from different
 sources, etc.
@@ -2467,18 +2467,18 @@ Other Perl virtual tables may also be published separately on CPAN.
 
 =head1 FOR DBD::SQLITE EXTENSION AUTHORS
 
-Since 1.30_01, you can retrieve the bundled SQLite C source and/or
+Since 1.30_01, you can retrieve the bundled SQLcipher C source and/or
 header like this:
 
   use File::ShareDir 'dist_dir';
   use File::Spec::Functions 'catfile';
   
   # the whole sqlite3.h header
-  my $sqlite3_h = catfile(dist_dir('DBD-SQLite'), 'sqlite3.h');
+  my $sqlite3_h = catfile(dist_dir('DBD-SQLcipher'), 'sqlite3.h');
   
   # or only a particular header, amalgamated in sqlite3.c
   my $what_i_want = 'parse.h';
-  my $sqlite3_c = catfile(dist_dir('DBD-SQLite'), 'sqlite3.c');
+  my $sqlite3_c = catfile(dist_dir('DBD-SQLcipher'), 'sqlite3.c');
   open my $fh, '<', $sqlite3_c or die $!;
   my $code = do { local $/; <$fh> };
   my ($parse_h) = $code =~ m{(
@@ -2491,9 +2491,9 @@ header like this:
   close $out;
 
 You usually want to use this in your extension's C<Makefile.PL>,
-and you may want to add DBD::SQLite to your extension's C<CONFIGURE_REQUIRES>
+and you may want to add DBD::SQLcipher to your extension's C<CONFIGURE_REQUIRES>
 to ensure your extension users use the same C source/header they use
-to build DBD::SQLite itself (instead of the ones installed in their
+to build DBD::SQLcipher itself (instead of the ones installed in their
 system).
 
 =head1 TO DO
@@ -2513,7 +2513,7 @@ Reading/writing into blobs using C<sqlite2_blob_open> / C<sqlite2_blob_close>.
 =head2 Support for custom callbacks for R-Tree queries
 
 Custom queries of a R-Tree index using a callback are possible with
-the SQLite C API (L<http://www.sqlite.org/rtree.html>), so one could
+the SQLcipher C API (L<http://www.sqlite.org/rtree.html>), so one could
 potentially use a callback that narrowed the result set down based
 on a specific need, such as querying for overlapping circles.
 
@@ -2521,15 +2521,15 @@ on a specific need, such as querying for overlapping circles.
 
 Bugs should be reported via the CPAN bug tracker at
 
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=DBD-SQLite>
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=DBD-SQLcipher>
 
-Note that bugs of bundled SQLite library (i.e. bugs in C<sqlite3.[ch]>)
-should be reported to the SQLite developers at sqlite.org via their bug
+Note that bugs of bundled SQLcipher library (i.e. bugs in C<sqlite3.[ch]>)
+should be reported to the SQLcipher developers at sqlite.org via their bug
 tracker or via their mailing list.
 
 The master repository is on GitHub:
 
-L<https://github.com/DBD-SQLite/DBD-SQLite>.
+L<https://github.com/DBD-SQLcipher/DBD-SQLcipher>.
 
 We also have a mailing list:
 
@@ -2553,9 +2553,9 @@ Kenichi Ishigaki E<lt>ishigaki@cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
-The bundled SQLite code in this distribution is Public Domain.
+The bundled SQLcipher code in this distribution is Public Domain.
 
-DBD::SQLite is copyright 2002 - 2007 Matt Sergeant.
+DBD::SQLcipher is copyright 2002 - 2007 Matt Sergeant.
 
 Some parts copyright 2008 Francis J. Lacoste.
 
@@ -2565,7 +2565,7 @@ Some parts copyright 2008 - 2013 Adam Kennedy.
 
 Some parts copyright 2009 - 2013 Kenichi Ishigaki.
 
-Some parts derived from L<DBD::SQLite::Amalgamation>
+Some parts derived from L<DBD::SQLcipher::Amalgamation>
 copyright 2008 Audrey Tang.
 
 This program is free software; you can redistribute

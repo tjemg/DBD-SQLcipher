@@ -90,7 +90,7 @@ foreach my $call_func (@CALL_FUNCS) {
 	        undef $dbh;
 	    }
 
-	    my $dbh2 = DBI->connect("dbi:SQLite:$dbfile", '', '', 
+	    my $dbh2 = DBI->connect("dbi:SQLcipher:$dbfile", '', '', 
 	    {
 	        RaiseError => 1,
 	        PrintError => 0,
