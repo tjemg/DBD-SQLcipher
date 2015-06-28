@@ -6,13 +6,20 @@ SYNOPSIS
       my $dbh = DBI->connect("dbi:SQLcipher:dbname=$dbfile","","");
 
 DESCRIPTION
-    SQLcipher is a public domain file-based relational database engine that you
-    can find at <http://www.sqlite.org/>.
+    This module is heavily based on the DBD::SQLite CPAN module - the main
+    difference it that this module comes bundled together with SQLcipher
+    from Zetetic - an open source extension to SQLite that provides transparent
+    256-bit AES encryption of database files. Furthermore, this module is fully
+    compatible with SQLite databases.
 
-    DBD::SQLcipher is a Perl DBI driver for SQLcipher, that includes the entire
-    thing in the distribution. So in order to get a fast transaction capable
-    RDBMS working for your perl project you simply have to install this
-    module, and nothing else.
+    Therefore, in the following document, which is a copy of the DBD::SQLite
+    documentation, the term sqlite shall be used to mean sqlcipher.
+
+    Furthermore, in the specific places where the module implements extended
+    functionality only relevant to SQLcipher, this shall be marked explicitly.
+
+    Note that SQLcipher depends on the OpenSSL library, which should be installed
+    in your system.
 
     SQLcipher supports the following features:
 
@@ -78,6 +85,23 @@ NOTABLE DIFFERENCES FROM OTHER DRIVERS
     conflicting with DBD::SQLcipher and use the supplied "sqlite3" command line
     tool.
 
+  Database Encryption (Specific functionality of SQLcipher)
+    SQLcipher can open for reading/writing databases which are encrypted using
+    256-bit AES encryption algorithm. An example on how to use this functionality
+    is shown in the following example:
+
+      use DBD::SQLcipher;
+
+      my $fileName = "test.db";
+      my $dbKey    = "this_is_my_secret_key";
+      my $dbh      = DBI->connect( "dbi:SQLcipher:dbname=$fileName", '', '' );
+
+      $dbh->do("pragma key =\"$dbKey\";");  # if this pragma is issued right after opening
+                                            # the database, SQLcipher uses the key to encrypt
+					    # and decrypt the database contents
+
+      # proceed with your code here as normal
+
   Blobs
     As of version 1.11, blobs should "just work" in SQLcipher as text columns.
     However this will cause the data to be treated as a string, so SQL
@@ -87,7 +111,7 @@ NOTABLE DIFFERENCES FROM OTHER DRIVERS
 
       use DBI qw(:sql_types);
       my $dbh = DBI->connect("dbi:SQLcipher:dbfile","","");
-      
+
   my $blob = `cat foo.jpg`;
       my $sth = $dbh->prepare("INSERT INTO mytable VALUES (1, ?)");
       $sth->bind_param(1, $blob, SQL_BLOB);
@@ -99,7 +123,7 @@ NOTABLE DIFFERENCES FROM OTHER DRIVERS
       $sth->execute();
       my $row = $sth->fetch;
       my $blobo = $row->[1];
-      
+
   # now $blobo == $blob
 
   Functions And Bind Parameters
@@ -124,7 +148,7 @@ NOTABLE DIFFERENCES FROM OTHER DRIVERS
         "bind_param()" to tell the type of a bind value.
 
           use DBI qw(:sql_types);  # Don't forget this
-          
+
   my $sth = $dbh->prepare(q{
             SELECT bar FROM foo GROUP BY bar HAVING count(*) > ?;
           });
@@ -231,13 +255,13 @@ NOTABLE DIFFERENCES FROM OTHER DRIVERS
         corresponding statements.
 
           $dbh->{AutoCommit} = 1;
-          
+
   $dbh->begin_work; # or $dbh->do('BEGIN TRANSACTION');
-          
+
   # $dbh->{AutoCommit} is turned off temporarily during a transaction;
-          
+
   $dbh->commit; # or $dbh->do('COMMIT');
-          
+
   # $dbh->{AutoCommit} is turned on again;
 
     When the AutoCommit flag is off
@@ -250,15 +274,15 @@ NOTABLE DIFFERENCES FROM OTHER DRIVERS
         begins if you execute another statement.
 
           $dbh->{AutoCommit} = 0;
-          
+
   # $dbh->do('BEGIN TRANSACTION') is not necessary, but possible
-          
+
   ...
-          
+
   $dbh->commit; # or $dbh->do('COMMIT');
-          
+
   # $dbh->{AutoCommit} stays intact;
-          
+
   $dbh->{AutoCommit} = 1;  # ends the transactional mode
 
     This "AutoCommit" mode is independent from the autocommit mode of the
@@ -398,7 +422,7 @@ DRIVER PRIVATE ATTRIBUTES
           use DBI qw(:sql_types);
           $dbh->{sqlite_unicode} = 1;
           my $sth = $dbh->prepare("INSERT INTO mytable (blobcolumn) VALUES (?)");
-          
+
   # Binary_data will be stored as is.
           $sth->bind_param(1, $binary_data, SQL_BLOB);
 
@@ -616,38 +640,38 @@ DRIVER PRIVATE METHODS
     adapted from pysqlite):
 
       package variance;
-      
+
   sub new { bless [], shift; }
-      
+
   sub step {
           my ( $self, $value ) = @_;
-      
+
       push @$self, $value;
       }
-      
+
   sub finalize {
           my $self = $_[0];
-      
+
       my $n = @$self;
-      
+
       # Variance is NULL unless there is more than one row
           return undef unless $n || $n == 1;
-      
+
       my $mu = 0;
           foreach my $v ( @$self ) {
               $mu += $v;
           }
           $mu /= $n;
-      
+
       my $sigma = 0;
           foreach my $v ( @$self ) {
               $sigma += ($x - $mu)**2;
           }
           $sigma = $sigma / ($n - 1);
-      
+
       return $sigma;
       }
-      
+
   $dbh->sqlite_create_aggregate( "variance", 1, 'variance' );
 
     The aggregate function can then be used as:
@@ -1013,10 +1037,10 @@ FULLTEXT SEARCH
 
       $dbh->do(<<"") or die DBI::errstr;
       CREATE VIRTUAL TABLE fts_example USING fts3(content)
-      
+
   my $sth = $dbh->prepare("INSERT INTO fts_example(content) VALUES (?))");
       $sth->execute($_) foreach @docs_to_insert;
-      
+
   my $results = $dbh->selectall_arrayref(<<"");
       SELECT docid, snippet(content) FROM fts_example WHERE content MATCH 'foo'
 
@@ -1165,7 +1189,7 @@ FULLTEXT SEARCH
 
       use Search::Tokenizer;
       $dbh->do(<<"") or die DBI::errstr;
-      CREATE ... USING fts3(<columns>, 
+      CREATE ... USING fts3(<columns>,
                             tokenize=perl 'Search::Tokenizer::unaccent')
 
     or you can use "new" in Search::Tokenizer to build your own tokenizer.
@@ -1204,16 +1228,16 @@ R* TREE SUPPORT
       SELECT id FROM try_rtree
          WHERE  minLong >= ? AND maxLong <= ?
          AND    minLat  >= ? AND maxLat  <= ?
-      
+
   # ... and those that overlap query coordinates
       my $overlap_sql = <<"";
       SELECT id FROM try_rtree
          WHERE    maxLong >= ? AND minLong <= ?
          AND      maxLat  >= ? AND minLat  <= ?
-      
+
   my $contained = $dbh->selectcol_arrayref($contained_sql,undef,
                             $minLong, $maxLong, $minLat, $maxLat);
-      
+
   my $overlapping = $dbh->selectcol_arrayref($overlap_sql,undef,
                             $minLong, $maxLong, $minLat, $maxLat);
 
@@ -1228,10 +1252,10 @@ FOR DBD::SQLITE EXTENSION AUTHORS
 
       use File::ShareDir 'dist_dir';
       use File::Spec::Functions 'catfile';
-      
+
   # the whole sqlite3.h header
       my $sqlite3_h = catfile(dist_dir('DBD-SQLcipher'), 'sqlite3.h');
-      
+
   # or only a particular header, amalgamated in sqlite3.c
       my $what_i_want = 'parse.h';
       my $sqlite3_c = catfile(dist_dir('DBD-SQLcipher'), 'sqlite3.c');
@@ -1279,7 +1303,7 @@ SUPPORT
     <http://rt.cpan.org/NoAuth/ReportBug.html?Queue=DBD-SQLcipher>
 
     Note that bugs of bundled sqlite library (i.e. bugs in "sqlite3.[ch]")
-    should be reported to the sqlite developers at sqlite.org via their bug
+    should be reported to the sqlite developers at zetetic.net via their bug
     tracker or via their mailing list.
 
 AUTHORS
@@ -1297,8 +1321,11 @@ AUTHORS
 
     Kenichi Ishigaki <ishigaki@cpan.org>
 
+    Tiago Gasiba <tgasiba@cpan.org>
+
 COPYRIGHT
-    The bundled SQLcipher code in this distribution is Public Domain.
+    The bundled SQLcipher code in this distribution is Open Source (see https://zetetic.net/sqlcipher).
+    See the file zetetic.txt for a description of the license.
 
     DBD::SQLcipher is copyright 2002 - 2007 Matt Sergeant.
 
