@@ -222,13 +222,10 @@ if ( $sqlite_inc ) {
 
 my @CC_DEFINE = (
 	'-DSQLITE_HAS_CODEC',               # for sqlitecipher
-	'-DSQLITE_ENABLE_FTS4',             # for sqlite >= 3.7.4
-	'-DSQLITE_ENABLE_FTS3_PARENTHESIS', # for sqlite >= 3.6.10
 	'-DSQLITE_ENABLE_RTREE',            # for sqlite >= 3.6.10
 	'-DSQLITE_ENABLE_COLUMN_METADATA',
 	'-DSQLITE_ENABLE_STAT3',            # for sqlite >= 3.7.9
 	'-DSQLITE_ENABLE_STAT4',            # for sqlite >= 3.8.3.1
-	'-DNDEBUG=1',
 );
 
 if (DEVELOPER_ONLY) {
@@ -305,6 +302,9 @@ $CC_OPTIONS{LDDLFLAGS} = join ' ', $Config{lddlflags}, @LDDLFLAGS if @LDDLFLAGS;
 
 
 
+# exclude possible generation of debug symbols
+my $OPTIMIZE = $Config{optimize};
+$OPTIMIZE =~ s/\s-g\s/ /g;
 
 #####################################################################
 # Hand off to ExtUtils::MakeMaker
@@ -325,12 +325,7 @@ WriteMakefile(
 			'Win32' => '0.30',
 		) : () ),
 	},
-	# XXX: VOVKASM suggested to remove this OPTIMIZE line to use
-	# the same optimization as perl itself. However, it turned out
-	# this change broke a test under some environment, and thus, may
-	# break other applications eventually. I'm not sure if this is
-	# worth the trouble.
-	# OPTIMIZE => $Config{optimize} . ($^O eq 'solaris' && !$Config{gccversion} ? "" : " -O2"),
+	OPTIMIZE => $OPTIMIZE,
 	OPTIONAL( '6.48',
 		MIN_PERL_VERSION => '5.006',
 	),
